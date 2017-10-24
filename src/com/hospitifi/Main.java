@@ -11,9 +11,9 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			AnchorPane root = (AnchorPane)FXMLLoader.load(getClass().getResource("Login.fxml"));
+			AnchorPane root = (AnchorPane)FXMLLoader.load(getClass().getResource("fxml/Login.fxml"));
 			Scene scene = new Scene(root);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			scene.getStylesheets().add(getClass().getResource("fxml/application.css").toExternalForm());
 			primaryStage.setTitle("Hospitifi init");
 			primaryStage.setScene(scene);
 			primaryStage.show();
