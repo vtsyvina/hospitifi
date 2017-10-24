@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" stylesheets="@application.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="com.hospitifi.FXMLDocumentController">
+   <children>
+      <ImageView fitHeight="89.0" fitWidth="186.0" layoutX="10.0" layoutY="42.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../logo.png" />
+         </image>
+      </ImageView>
+      <Button fx:id="logoutButton" layoutX="1113.0" layoutY="36.0" mnemonicParsing="false" onAction="#handleLogoutButton" prefHeight="44.0" prefWidth="118.0" text="Log Out" />
+      <Button layoutX="895.0" layoutY="37.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="177.0" text="View Reports" />
+      <ChoiceBox layoutX="273.0" layoutY="42.0" prefWidth="150.0" />
+      <Label layoutX="521.0" layoutY="45.0" prefHeight="49.0" prefWidth="282.0" text="Administrator Menu">
+         <font>
+            <Font size="30.0" />
+         </font>
+      </Label>
+      <TitledPane animated="false" layoutX="450.0" layoutY="207.0" text="untitled" />
+      <TabPane layoutX="173.0" layoutY="317.0" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" />
+   </children>
+</AnchorPane>
