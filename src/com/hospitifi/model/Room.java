@@ -1,5 +1,6 @@
 package com.hospitifi.model;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Room {
@@ -11,6 +12,9 @@ public class Room {
     private boolean safe;
     private boolean bath;
     private int rateCategory;
+
+    private List<Occupation> occupations;
+    private List<Reservation> reservations;
 
     public Room() {
     }
@@ -88,6 +92,22 @@ public class Room {
 
     public void setRateCategory(int rateCategory) {
         this.rateCategory = rateCategory;
+    }
+
+    public List<Occupation> getOccupations() {
+        return occupations;
+    }
+
+    public void setOccupations(List<Occupation> occupations) {
+        this.occupations = occupations;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
     }
 
     @Override
