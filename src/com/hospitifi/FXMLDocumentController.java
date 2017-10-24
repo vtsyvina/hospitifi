@@ -2,6 +2,7 @@ package com.hospitifi;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import com.hospitifi.service.UserService;
@@ -44,7 +45,7 @@ public class FXMLDocumentController implements Initializable {
 	ListView<String> list;
 
 	private UserService userService = UserServiceImpl.getInstance();;
-
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		if (invalidCombination != null) {
@@ -52,6 +53,26 @@ public class FXMLDocumentController implements Initializable {
         }
 	}
 
+	public static Parent load(final URL url, final ResourceBundle resBundle, final Object controller)
+	        throws IOException {
+		Objects.requireNonNull(url);
+	    Objects.requireNonNull(controller);
+	    
+	    FXMLLoader loader = new FXMLLoader();
+	    loader.setLocation(url);
+	    loader.setResources(resBundle);
+
+	  //controller is synchronized between fxml files with setControllerFactory
+	    loader.setControllerFactory(controllerClass -> {
+	        if (controllerClass != null && !controllerClass.isInstance(controller)) {
+	            throw new IllegalArgumentException("Invalid controller instance, expecting instance of class '" +
+	                    controllerClass.getName() + "'");
+	        }
+	        return controller;
+	    });
+	    return (Parent) loader.load();
+	}
+	
 	@FXML
 	private void handleLoginButton(ActionEvent event) throws IOException{
 		/*
@@ -62,8 +83,11 @@ public class FXMLDocumentController implements Initializable {
 		String pass = password.getText();
 		
 		if ((log != null && pass != null ) && userService.authenticateUser(log, pass)) {
+
+			String role = userService.getCurrentUserRole();
+			
 			Stage stage = (Stage) loginButton.getScene().getWindow();  //get reference to button's stage   
-			Parent root = FXMLLoader.load(getClass().getResource("fxml/Menu.fxml"));    //load Menu.fxml
+			Parent root = load(getClass().getResource("fxml/Menu.fxml"), null, this);
 			Scene scene = new Scene(root);
 			stage.setScene(scene);
 			stage.show();
