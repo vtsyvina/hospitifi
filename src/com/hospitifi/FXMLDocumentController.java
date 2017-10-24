@@ -42,8 +42,6 @@ public class FXMLDocumentController implements Initializable {
 	Button editUser;
 	@FXML
 	ListView<String> list;
-	@FXML
-	TextField synopsis;
 
 	private UserService userService = UserServiceImpl.getInstance();;
 
@@ -65,7 +63,7 @@ public class FXMLDocumentController implements Initializable {
 		
 		if ((log != null && pass != null ) && userService.authenticateUser(log, pass)) {
 			Stage stage = (Stage) loginButton.getScene().getWindow();  //get reference to button's stage   
-			Parent root = FXMLLoader.load(getClass().getResource("Menu.fxml"));    //load Menu.fxml
+			Parent root = FXMLLoader.load(getClass().getResource("fxml/Menu.fxml"));    //load Menu.fxml
 			Scene scene = new Scene(root);
 			stage.setScene(scene);
 			stage.show();
@@ -78,9 +76,10 @@ public class FXMLDocumentController implements Initializable {
 	@FXML
 	private void handleLogoutButton(ActionEvent event) throws IOException{
 		Stage stage = (Stage) logoutButton.getScene().getWindow();  
-		Parent root = FXMLLoader.load(getClass().getResource("Login.fxml"));    
+		Parent root = FXMLLoader.load(getClass().getResource("fxml/Login.fxml"));    
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		stage.show();
+		userService.logOut();
 	}
 }
