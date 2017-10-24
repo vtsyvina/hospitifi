@@ -60,7 +60,7 @@ public class FXMLDocumentController implements Initializable {
 	    
 	    FXMLLoader loader = new FXMLLoader();
 	    loader.setLocation(url);
-	    loader.setResources(resBundle);
+	    //loader.setResources(resBundle);
 
 	  //controller is synchronized between fxml files with setControllerFactory
 	    loader.setControllerFactory(controllerClass -> {
@@ -83,11 +83,19 @@ public class FXMLDocumentController implements Initializable {
 		String pass = password.getText();
 		
 		if ((log != null && pass != null ) && userService.authenticateUser(log, pass)) {
-
-			String role = userService.getCurrentUserRole();
 			
-			Stage stage = (Stage) loginButton.getScene().getWindow();  //get reference to button's stage   
-			Parent root = load(getClass().getResource("fxml/Menu.fxml"), null, this);
+			Stage stage = (Stage) loginButton.getScene().getWindow();  //get reference to button's stage  
+			String role = userService.getCurrentUserRole();
+			Parent root;
+			if (role.equalsIgnoreCase("admin")) {
+				root = load(getClass().getResource("fxml/AdminMenu.fxml"), null, this);
+			}
+			else if (role.equalsIgnoreCase("manager")) {
+				root = load(getClass().getResource("fxml/ManagerMenu.fxml"), null, this);
+			}
+			else {  //if receptionist
+				root = load(getClass().getResource("fxml/ReceptionistMenu.fxml"), null, this);
+			}
 			Scene scene = new Scene(root);
 			stage.setScene(scene);
 			stage.show();
@@ -100,7 +108,7 @@ public class FXMLDocumentController implements Initializable {
 	@FXML
 	private void handleLogoutButton(ActionEvent event) throws IOException{
 		Stage stage = (Stage) logoutButton.getScene().getWindow();  
-		Parent root = FXMLLoader.load(getClass().getResource("fxml/Login.fxml"));    
+		Parent root = load(getClass().getResource("fxml/Login.fxml"), null, this);    
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		stage.show();
