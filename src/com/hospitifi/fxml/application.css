@@ -3,12 +3,6 @@
     -fx-background-color: derive(master-color, 70%);
 }
 
-.split-pane {
-    -fx-padding: 0;
-    -fx-border-width: 0;
-    -fx-background-color: derive(master-color, 100%);
-}
-
 .darkList {
     -fx-background-color: derive(master-color, -60%);
 }
