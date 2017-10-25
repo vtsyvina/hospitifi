@@ -159,11 +159,14 @@ public class FXMLDocumentController implements Initializable {
 	}
 	
 	public void newUserClicked(ActionEvent event) {
-        userService.save(new User(Long.parseLong(idAdminEdit.getText()), loginAdminEdit.getText(), 
-        		passwordAdminEdit.getText(), null, roleAdminEdit.getValue()));
+		User user = new User(Long.parseLong(idAdminEdit.getText()), loginAdminEdit.getText(), 
+        		passwordAdminEdit.getText(), null, roleAdminEdit.getValue());
+        userService.save(user);
+        data.add(user);
     }
 	public void deleteUserClicked(ActionEvent event) {
         userService.delete(userTable.getSelectionModel().getSelectedItem().getId());
+        data.remove(userTable.getSelectionModel().getSelectedItem());
     }
 	private void adminChoiceBoxChoice (String s) {
 		if (s.equals("Users")) {
