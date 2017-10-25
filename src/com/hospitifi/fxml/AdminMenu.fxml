@@ -8,23 +8,82 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" stylesheets="@application.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="com.hospitifi.FXMLDocumentController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospitifi.fxml.FXMLDocumentController">
    <children>
-      <ImageView fitHeight="89.0" fitWidth="186.0" layoutX="10.0" layoutY="42.0" pickOnBounds="true" preserveRatio="true">
+      <Label layoutX="486.0" layoutY="162.0" prefHeight="35.0" prefWidth="73.0" text="Select:" />
+      <ImageView fitHeight="89.0" fitWidth="186.0" layoutX="9.0" layoutY="34.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../logo.png" />
          </image>
       </ImageView>
       <Button fx:id="logoutButton" layoutX="1113.0" layoutY="36.0" mnemonicParsing="false" onAction="#handleLogoutButton" prefHeight="44.0" prefWidth="118.0" text="Log Out" />
       <Button layoutX="895.0" layoutY="37.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="177.0" text="View Reports" />
-      <ChoiceBox layoutX="273.0" layoutY="42.0" prefWidth="150.0" />
+      <ChoiceBox fx:id="choiceBox" layoutX="574.0" layoutY="153.0" prefHeight="51.0" prefWidth="170.0" />
       <Label layoutX="521.0" layoutY="45.0" prefHeight="49.0" prefWidth="282.0" text="Administrator Menu">
          <font>
             <Font size="30.0" />
          </font>
       </Label>
-      <TitledPane animated="false" layoutX="450.0" layoutY="207.0" text="untitled" />
       <TabPane layoutX="173.0" layoutY="317.0" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" />
+      <StackPane layoutX="110.0" layoutY="238.0" prefHeight="507.0" prefWidth="1105.0">
+         <children>
+            <SplitPane fx:id="roomPane" dividerPositions="0.8322756119673618" layoutX="10.0" layoutY="10.0" prefHeight="579.0" prefWidth="1105.0">
+               <items>
+                  <TableView fx:id="roomTable" prefHeight="507.0" prefWidth="593.0">
+                     <columns>
+                        <TableColumn fx:id="roomIdCol" prefWidth="77.33332824707031" text="ID" />
+                        <TableColumn fx:id="roomNumberCol" prefWidth="129.6666717529297" text="number" />
+                        <TableColumn fx:id="roomFloorCol" prefWidth="99.66665649414062" text="floor" />
+                        <TableColumn fx:id="roomBedsCol" prefWidth="101.66668701171875" text="beds" />
+                        <TableColumn fx:id="roomBedTypeCol" prefWidth="135.3333740234375" text="bed type" />
+                        <TableColumn fx:id="roomSafeCol" prefWidth="115.6666259765625" text="Safe" />
+                        <TableColumn fx:id="roomBathCol" prefWidth="75.0" text="Bath" />
+                        <TableColumn fx:id="roomRateCategoryCol" prefWidth="180.33331298828125" text="Rate Category" />
+                     </columns>
+                  </TableView>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="505.0" prefWidth="222.0" />
+               </items>
+            </SplitPane>
+            <SplitPane fx:id="userPane" dividerPositions="0.5902085222121487" prefHeight="579.0" prefWidth="1105.0">
+              <items>
+                  <TableView fx:id="userTable" prefHeight="507.0" prefWidth="593.0">
+                    <columns>
+                      <TableColumn fx:id="userIdCol" prefWidth="129.0" text="id" />
+                      <TableColumn fx:id="userLoginCol" prefWidth="167.66668701171875" text="login" />
+                        <TableColumn fx:id="userPasswordCol" prefWidth="173.33331298828125" text="password" />
+                        <TableColumn fx:id="userRoleCol" prefWidth="178.33331298828125" text="role" />
+                    </columns>
+                  </TableView>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                     <children>
+                        <Button fx:id="newUser" alignment="CENTER" layoutX="87.0" layoutY="331.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="255.0" text="Create new user">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="editUser" alignment="CENTER" layoutX="86.0" layoutY="431.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="255.0" text="Make change to selected">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="deleteUser" alignment="CENTER" layoutX="84.0" layoutY="382.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="255.0" text="Delete Selected" AnchorPane.topAnchor="382.0">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Button>
+                        <Label layoutX="91.0" layoutY="97.0" text="id" />
+                        <Label layoutX="71.0" layoutY="158.0" text="login" />
+                        <Label layoutX="32.0" layoutY="221.0" text="password" />
+                        <Label layoutX="89.0" layoutY="275.0" text="role" />
+                        <TextField fx:id="idAdminEdit" layoutX="142.0" layoutY="94.0" />
+                        <TextField fx:id="loginAdminEdit" layoutX="142.0" layoutY="156.0" />
+                        <TextField fx:id="passwordAdminEdit" layoutX="141.0" layoutY="218.0" />
+                        <ChoiceBox layoutX="145.0" layoutY="267.0" prefHeight="12.0" prefWidth="141.0" />
+                     </children>
+                  </AnchorPane>
+              </items>
+            </SplitPane>
+         </children>
+      </StackPane>
    </children>
 </AnchorPane>
