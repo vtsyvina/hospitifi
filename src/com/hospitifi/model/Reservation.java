@@ -1,20 +1,20 @@
 package com.hospitifi.model;
 
-import java.util.Date;
+import java.util.Calendar;
 import java.util.Objects;
 
 public class Reservation {
     private long id;
     private long roomId;
-    private Date checkIn;
-    private Date checkOut;
+    private Calendar checkIn;
+    private Calendar checkOut;
     private String guest_name;
     private boolean canceled;
 
     public Reservation() {
     }
 
-    public Reservation(long id, long roomId, Date checkIn, Date checkOut, String guest_name, boolean canceled) {
+    public Reservation(long id, long roomId, Calendar checkIn, Calendar checkOut, String guest_name, boolean canceled) {
         this.id = id;
         this.roomId = roomId;
         this.checkIn = checkIn;
@@ -39,19 +39,19 @@ public class Reservation {
         this.roomId = roomId;
     }
 
-    public Date getCheckIn() {
+    public Calendar getCheckIn() {
         return checkIn;
     }
 
-    public void setCheckIn(Date checkIn) {
+    public void setCheckIn(Calendar checkIn) {
         this.checkIn = checkIn;
     }
 
-    public Date getCheckOut() {
+    public Calendar getCheckOut() {
         return checkOut;
     }
 
-    public void setCheckOut(Date checkOut) {
+    public void setCheckOut(Calendar checkOut) {
         this.checkOut = checkOut;
     }
 

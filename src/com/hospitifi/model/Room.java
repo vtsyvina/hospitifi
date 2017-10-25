@@ -70,7 +70,7 @@ public class Room {
         this.bedType = bedType;
     }
 
-    public boolean isSafe() {
+    public boolean hasSafe() {
         return safe;
     }
 
@@ -78,7 +78,7 @@ public class Room {
         this.safe = safe;
     }
 
-    public boolean isBath() {
+    public boolean hasBath() {
         return bath;
     }
 
