@@ -7,6 +7,7 @@ import com.hospitifi.service.UserService;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 public class UserServiceImpl implements UserService {
     private static final UserService instance = new UserServiceImpl();
@@ -66,6 +67,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean delete(Long id) {
         return userRepository.delete(id);
+    }
+
+    @Override
+    public List<User> getAll() {
+        return userRepository.getAll();
     }
 
     private String getPasswordHash(String password) {

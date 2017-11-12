@@ -12,14 +12,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class RoomRepositoryImpl implements RoomRepository {
     private static final RoomRepository instance = new RoomRepositoryImpl();
-    private static final String GET_ROOM_BY_ID = "SELECT ID, NUMBER, FLOOR, BEDS, BEDS_TYPE, SAFE, BATH, RATE_CATEGORY FROM ROOM WHERE ID = ?";
+    private static final String GET_ROOM_BY_ID = "SELECT ID, NUMBER, FLOOR, r.BEDS as BEDS, r.BEDS_TYPE as BEDS_TYPE, SAFE, BATH, r.RATE_CATEGORY as RATE_CATEGORY, " +
+            "(SELECT RATE FROM RATES rt WHERE rt.RATE_CATEGORY = r.RATE_CATEGORY AND DATE_START <= :date AND DATE_END >= :date LIMIT 1) RATE " +
+            "FROM ROOM r " +
+            "WHERE ID = :id";
+    private static final String GET_ALL_ROOMS = "SELECT ID, NUMBER, FLOOR, r.BEDS as BEDS, r.BEDS_TYPE as BEDS_TYPE, SAFE, BATH, r.RATE_CATEGORY as RATE_CATEGORY, " +
+            "(SELECT RATE FROM RATES rt WHERE rt.RATE_CATEGORY = r.RATE_CATEGORY AND DATE_START <= :date AND DATE_END >= :date LIMIT 1) RATE " +
+            "FROM ROOM r ";
     private static final String UPDATE_ROOM = "UPDATE ROOM SET NUMBER =?, FLOOR =?, BEDS =?, BEDS_TYPE =?, SAFE =?, BATH =?, RATE_CATEGORY=? WHERE ID = ?";
     private static final String INSERT_ROOM = "INSERT INTO ROOM (NUMBER, FLOOR, BEDS, BEDS_TYPE, SAFE, BATH, RATE_CATEGORY) VALUES ?,?,?,?,?,?,?";
-    private static final String DELETE_ROOM = "DETELE FROM ROOM WHERE ID = ?";
+    private static final String DELETE_ROOM = "DELETE FROM ROOM WHERE ID = ?";
     private static final String FIND_AVAILABLE_ROOMS = "SELECT ID, NUMBER, FLOOR, BEDS, BEDS_TYPE, SAFE, BATH, RATE_CATEGORY FROM ROOM r " +
             "WHERE (" +
             "SELECT COUNT(*) FROM RESERVATION " +
@@ -33,28 +40,25 @@ public class RoomRepositoryImpl implements RoomRepository {
             "OR (DATE_START <= :to AND :to <= DATE_END) " +
             "OR (:from <= DATE_START AND DATE_END <= :to)) ) = 0";
 
-    public static RoomRepository getInstance(){
+    public static RoomRepository getInstance() {
         return instance;
     }
-    private RoomRepositoryImpl(){}
 
-    @Override
-    public int getRoomRate(int rateCategory) {
-        return 0;
+    private RoomRepositoryImpl() {
     }
 
     /**
      * Usage example:
      * Calendar start = new GregorianCalendar();
-            start.set(Calendar.DAY_OF_MONTH, 5);
-            start.set(Calendar.MONTH, 6);
-            start.set(Calendar.YEAR, 2017);
-
-            Calendar end = new GregorianCalendar();
-            end.set(Calendar.DAY_OF_MONTH, 8);
-            end.set(Calendar.MONTH, 6);
-            end.set(Calendar.YEAR, 2017);
-            List<Room> availableRooms = repository.findAvailableRooms(start, end);
+     * start.set(Calendar.DAY_OF_MONTH, 5);
+     * start.set(Calendar.MONTH, 6);
+     * start.set(Calendar.YEAR, 2017);
+     * <p>
+     * Calendar end = new GregorianCalendar();
+     * end.set(Calendar.DAY_OF_MONTH, 8);
+     * end.set(Calendar.MONTH, 6);
+     * end.set(Calendar.YEAR, 2017);
+     * List<Room> availableRooms = repository.findAvailableRooms(start, end);
      */
     @Override
     public List<Room> findAvailableRooms(Calendar from, Calendar to) {
@@ -70,14 +74,7 @@ public class RoomRepositoryImpl implements RoomRepository {
 
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                result.add(new Room(resultSet.getLong("ID"),
-                        resultSet.getString("NUMBER"),
-                        resultSet.getInt("FLOOR"),
-                        resultSet.getInt("BEDS"),
-                        BedType.valueOf(getBedType(resultSet)),
-                        resultSet.getInt("SAFE") == 1,
-                        resultSet.getInt("BATH") == 1,
-                        resultSet.getInt("RATE_CATEGORY")));
+                result.add(getRoomFromResultSet(resultSet));
             }
             return result;
         } catch (SQLException e) {
@@ -88,15 +85,29 @@ public class RoomRepositoryImpl implements RoomRepository {
         return null;
     }
 
-    private String getBedType(ResultSet resultSet) throws SQLException {
-        String bedsType = resultSet.getString("BEDS_TYPE");
-        if (bedsType == null){
-            bedsType = "QUEEN";
-        }else {
-            bedsType = bedsType.toUpperCase();
+    @Override
+    public List<Room> getAll() {
+        List<Room> rooms = new ArrayList<>();
+        Connection connection = SQLiteJDBCDriverConnection.getConnection();
+        if (connection == null) {
+            return rooms;
         }
-        return bedsType;
+        try {
+            NamedParameterStatement statement = new NamedParameterStatement(connection, GET_ALL_ROOMS);
+            statement.setLong("date", new Date().getTime());
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                rooms.add(getRoomFromResultSet(resultSet));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            SQLiteJDBCDriverConnection.closeConnection(connection);
+        }
+        return rooms;
     }
+
 
     @Override
     public Room get(Long id) {
@@ -105,21 +116,13 @@ public class RoomRepositoryImpl implements RoomRepository {
             return null;
         }
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(GET_ROOM_BY_ID);
-            preparedStatement.setLong(1, id);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
+            NamedParameterStatement statement = new NamedParameterStatement(connection, GET_ROOM_BY_ID);
+            statement.setLong("id", id);
+            statement.setLong("date", new Date().getTime());
+            ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                return new Room(resultSet.getLong("ID"),
-                        resultSet.getString("NUMBER"),
-                        resultSet.getInt("FLOOR"),
-                        resultSet.getInt("BEDS"),
-                        BedType.valueOf(getBedType(resultSet)),
-                        resultSet.getInt("SAFE") == 1,
-                        resultSet.getInt("BATH") == 1,
-                        resultSet.getInt("RATE_CATEGORY"));
+                return getRoomFromResultSet(resultSet);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -193,5 +196,27 @@ public class RoomRepositoryImpl implements RoomRepository {
             SQLiteJDBCDriverConnection.closeConnection(connection);
         }
         return false;
+    }
+
+    private Room getRoomFromResultSet(ResultSet resultSet) throws SQLException {
+        return new Room(resultSet.getLong("ID"),
+                resultSet.getString("NUMBER"),
+                resultSet.getInt("FLOOR"),
+                resultSet.getInt("BEDS"),
+                BedType.valueOf(getBedType(resultSet)),
+                resultSet.getInt("SAFE") == 1,
+                resultSet.getInt("BATH") == 1,
+                resultSet.getInt("RATE_CATEGORY"),
+                resultSet.getInt("RATE"));
+    }
+
+    private String getBedType(ResultSet resultSet) throws SQLException {
+        String bedsType = resultSet.getString("BEDS_TYPE");
+        if (bedsType == null) {
+            bedsType = "QUEEN";
+        } else {
+            bedsType = bedsType.toUpperCase();
+        }
+        return bedsType;
     }
 }

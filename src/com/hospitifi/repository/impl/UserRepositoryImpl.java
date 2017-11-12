@@ -8,12 +8,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserRepositoryImpl implements UserRepository {
     //it should be a Singleton
     private static final UserRepository instance = new UserRepositoryImpl();
     private static final String GET_USER_BY_LOGIN_AND_PASS = "SELECT ID, LOGIN, PASSWORD, ROLE FROM USERS WHERE LOGIN = ? AND PASSWORD = ?";
     private static final String GET_USER_BY_ID = "SELECT ID, LOGIN, PASSWORD, ROLE FROM USERS WHERE ID = ?";
+    private static final String GET_ALL_USERS = "SELECT ID, LOGIN, PASSWORD, ROLE FROM USERS";
     private static final String UPDATE_USER = "UPDATE USERS SET LOGIN = ?, PASSWORD = ?, ROLE = ? WHERE ID = ?";
     private static final String DELETE_USER = "DELETE FROM USERS WHERE ID = ?";
     private static final String INSERT_USER = "INSERT INTO USERS (LOGIN, PASSWORD, ROLE) VALUES (?, ?, ?)";
@@ -137,5 +140,33 @@ public class UserRepositoryImpl implements UserRepository {
             SQLiteJDBCDriverConnection.closeConnection(connection);
         }
         return false;
+    }
+
+    @Override
+    public List<User> getAll() {
+        List<User> users = new ArrayList<>();
+        Connection connection = SQLiteJDBCDriverConnection.getConnection();
+        if (connection == null){
+            return users;
+        }
+        try {
+
+            PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_USERS);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                users.add(new User(resultSet.getLong("ID"),
+                        resultSet.getString("LOGIN"),
+                        null,
+                        resultSet.getString("PASSWORD"),
+                        resultSet.getString("ROLE")));
+            }
+            return users;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            SQLiteJDBCDriverConnection.closeConnection(connection);
+        }
+        return users;
     }
 }

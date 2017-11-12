@@ -12,6 +12,7 @@ public class Room {
     private boolean safe;
     private boolean bath;
     private int rateCategory;
+    private int rate;
 
     private List<Occupation> occupations;
     private List<Reservation> reservations;
@@ -19,7 +20,7 @@ public class Room {
     public Room() {
     }
 
-    public Room(long id, String number, int floor, int beds, BedType bedType, boolean safe, boolean bath, int rateCategory) {
+    public Room(long id, String number, int floor, int beds, BedType bedType, boolean safe, boolean bath, int rateCategory, int rate) {
         this.id = id;
         this.number = number;
         this.floor = floor;
@@ -28,6 +29,7 @@ public class Room {
         this.safe = safe;
         this.bath = bath;
         this.rateCategory = rateCategory;
+        this.rate = rate;
     }
 
     public long getId() {
@@ -110,6 +112,14 @@ public class Room {
         this.reservations = reservations;
     }
 
+    public int getRate() {
+        return rate;
+    }
+
+    public void setRate(int rate) {
+        this.rate = rate;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -121,13 +131,16 @@ public class Room {
                 safe == room.safe &&
                 bath == room.bath &&
                 rateCategory == room.rateCategory &&
+                rate == room.rate &&
                 Objects.equals(number, room.number) &&
-                bedType == room.bedType;
+                bedType == room.bedType &&
+                Objects.equals(occupations, room.occupations) &&
+                Objects.equals(reservations, room.reservations);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, number, floor, beds, bedType, safe, bath, rateCategory);
+        return Objects.hash(id, number, floor, beds, bedType, safe, bath, rateCategory, rate, occupations, reservations);
     }
 
     @Override
@@ -141,9 +154,11 @@ public class Room {
         sb.append(", safe=").append(safe);
         sb.append(", bath=").append(bath);
         sb.append(", rateCategory=").append(rateCategory);
+        sb.append(", rate=").append(rate);
+        sb.append(", occupations=").append(occupations);
+        sb.append(", reservations=").append(reservations);
         sb.append('}');
         return sb.toString();
     }
-
 
 }

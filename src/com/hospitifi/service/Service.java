@@ -1,5 +1,7 @@
 package com.hospitifi.service;
 
+import java.util.List;
+
 /**
  * Base interface for services that provides CRUD operations
  * @param <E> entity class
@@ -13,4 +15,6 @@ public interface Service<E, T> {
     boolean save(E entity);
 
     boolean delete(T id);
+
+    List<E> getAll();
 }

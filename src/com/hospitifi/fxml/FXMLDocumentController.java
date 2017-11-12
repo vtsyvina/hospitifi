@@ -1,20 +1,9 @@
 package com.hospitifi.fxml;
 
-import java.io.IOException;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.util.Objects;
-import java.util.ResourceBundle;
-
 import com.hospitifi.model.Room;
 import com.hospitifi.model.User;
-import com.hospitifi.repository.UserRepository;
-import com.hospitifi.repository.impl.UserRepositoryImpl;
 import com.hospitifi.service.UserService;
 import com.hospitifi.service.impl.UserServiceImpl;
-import com.hospitifi.util.SQLiteJDBCDriverConnection;
-
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -35,6 +24,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class FXMLDocumentController implements Initializable {
 
@@ -101,7 +95,7 @@ public class FXMLDocumentController implements Initializable {
 	@FXML
 	TextField passwordAdminEdit;
 	@FXML
-	ChoiceBox<String> roleAdminEdit = new ChoiceBox<String>();
+	ChoiceBox<String> roleAdminEdit = new ChoiceBox<>();
 	
 	private UserService userService = UserServiceImpl.getInstance();;
 	
@@ -126,30 +120,14 @@ public class FXMLDocumentController implements Initializable {
 		
 		userTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		roomTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		userIdCol.setCellValueFactory(new PropertyValueFactory<User, Long>("userId"));
-		userLoginCol.setCellValueFactory(new PropertyValueFactory<User, String>("userLogin"));
-		userPasswordCol.setCellValueFactory(new PropertyValueFactory<User, String>("userPassword"));
-		userRoleCol.setCellValueFactory(new PropertyValueFactory<User, String>("userRole"));
-		
-		Connection connection = SQLiteJDBCDriverConnection.getConnection();
+		userIdCol.setCellValueFactory(new PropertyValueFactory<>("userId"));
+		userLoginCol.setCellValueFactory(new PropertyValueFactory<>("userLogin"));
+		userPasswordCol.setCellValueFactory(new PropertyValueFactory<>("userPassword"));
+		userRoleCol.setCellValueFactory(new PropertyValueFactory<>("userRole"));
+
 		data = FXCollections.observableArrayList();
-		try{      
-	        String SQL = "SELECT * FROM USERS ORDER BY ID";            
-	        ResultSet rs = connection.createStatement().executeQuery(SQL);  
-	        while(rs.next()){
-	            User user = new User();
-	            user.setId(rs.getLong("ID"));                       
-	            user.setLogin(rs.getString("LOGIN"));
-	            user.setPassword(rs.getString("PASSWORD"));
-	            user.setRole(rs.getString("ROLE"));
-	            data.add(user);                  
-	        }
-	        userTable.setItems(data);
-	    }
-	    catch(Exception e){
-	          e.printStackTrace();
-	          System.out.println("error while building data");            
-	    }
+		data.addAll(userService.getAll());
+		userTable.setItems(data);
 	}
 	private void configureManager() {
 		//To be written
