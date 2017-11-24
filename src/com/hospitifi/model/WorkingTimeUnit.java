@@ -4,6 +4,12 @@ import java.time.DayOfWeek;
 import java.util.Calendar;
 import java.util.Objects;
 
+/**
+ * How to set time for WorkingUnit:
+ *  Calendar instance = Calendar.getInstance();
+ *  instance.set(Calendar.HOUR_OF_DAY, 18);
+ *  instance.set(Calendar.MINUTE, 35);
+ */
 public class WorkingTimeUnit {
     private Employee employee;
     private DayOfWeek day;
@@ -71,7 +77,7 @@ public class WorkingTimeUnit {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("WorkingTimeUnit{");
-        sb.append("employee=").append(employee);
+        sb.append("employee=").append(employee.getName());
         sb.append(", day=").append(day);
         sb.append(", start=").append(start);
         sb.append(", end=").append(end);
