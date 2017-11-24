@@ -2,15 +2,15 @@ package com.hospitifi.service.impl;
 
 import com.hospitifi.model.Room;
 import com.hospitifi.repository.RoomRepository;
-import com.hospitifi.repository.impl.RoomRepositoryImpl;
 import com.hospitifi.service.RoomService;
+import com.hospitifi.util.RepositoryFactory;
 
 import java.util.Calendar;
 import java.util.List;
 
 public class RoomServiceImpl implements RoomService{
     private static final RoomService instance = new RoomServiceImpl();
-    private RoomRepository roomRepository = RoomRepositoryImpl.getInstance();
+    private RoomRepository roomRepository = RepositoryFactory.getRoomRepository();
 
     public static RoomService getInstance() {
         return instance;

@@ -2,8 +2,8 @@ package com.hospitifi.service.impl;
 
 import com.hospitifi.model.User;
 import com.hospitifi.repository.UserRepository;
-import com.hospitifi.repository.impl.UserRepositoryImpl;
 import com.hospitifi.service.UserService;
+import com.hospitifi.util.RepositoryFactory;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -13,7 +13,7 @@ public class UserServiceImpl implements UserService {
     private static final UserService instance = new UserServiceImpl();
     private static final String SALT = "w9V_mM1#";
     private static User currentUser;
-    private UserRepository userRepository = UserRepositoryImpl.getInstance();
+    private UserRepository userRepository = RepositoryFactory.getUserRepository();
 
     private UserServiceImpl() {
     }
