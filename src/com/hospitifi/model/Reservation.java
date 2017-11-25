@@ -8,18 +8,18 @@ public class Reservation {
     private long roomId;
     private Calendar checkIn;
     private Calendar checkOut;
-    private String guest_name;
+    private String guestName;
     private boolean canceled;
 
     public Reservation() {
     }
 
-    public Reservation(long id, long roomId, Calendar checkIn, Calendar checkOut, String guest_name, boolean canceled) {
+    public Reservation(long id, long roomId, Calendar checkIn, Calendar checkOut, String guestName, boolean canceled) {
         this.id = id;
         this.roomId = roomId;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
-        this.guest_name = guest_name;
+        this.guestName = guestName;
         this.canceled = canceled;
     }
 
@@ -55,12 +55,12 @@ public class Reservation {
         this.checkOut = checkOut;
     }
 
-    public String getGuest_name() {
-        return guest_name;
+    public String getGuestName() {
+        return guestName;
     }
 
-    public void setGuest_name(String guest_name) {
-        this.guest_name = guest_name;
+    public void setGuestName(String guestName) {
+        this.guestName = guestName;
     }
 
     public boolean isCanceled() {
@@ -81,12 +81,12 @@ public class Reservation {
                 canceled == that.canceled &&
                 Objects.equals(checkIn, that.checkIn) &&
                 Objects.equals(checkOut, that.checkOut) &&
-                Objects.equals(guest_name, that.guest_name);
+                Objects.equals(guestName, that.guestName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, roomId, checkIn, checkOut, guest_name, canceled);
+        return Objects.hash(id, roomId, checkIn, checkOut, guestName, canceled);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class Reservation {
         sb.append(", roomId=").append(roomId);
         sb.append(", checkIn=").append(checkIn);
         sb.append(", checkOut=").append(checkOut);
-        sb.append(", guest_name='").append(guest_name).append('\'');
+        sb.append(", guestName='").append(guestName).append('\'');
         sb.append(", canceled=").append(canceled);
         sb.append('}');
         return sb.toString();
