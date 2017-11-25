@@ -17,6 +17,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     private static final ReservationRepository instance = new ReservationRepositoryImpl();
     private static final String GET_BY_ID = "SELECT ID, ROOM_ID, CHECK_IN, CHECK_OUT, GUEST_NAME, CANCELED FROM RESERVATION WHERE ID = ?";
     private static final String GET_ALL = "SELECT ID, ROOM_ID, CHECK_IN, CHECK_OUT, GUEST_NAME, CANCELED FROM RESERVATION";
+    private static final String FIND_GUEST_RESERVATION = "SELECT ID, ROOM_ID, CHECK_IN, CHECK_OUT, GUEST_NAME, CANCELED FROM RESERVATION WHERE GUEST_NAME = ?";
     private static final String UPDATE_RESERVATION = "UPDATE RESERVATION SET ROOM_ID = ? , CHECK_IN = ?, CHECK_OUT = ?, GUEST_NAME = ?, CANCELED = ? WHERE ID = ?";
     private static final String INSERT_RESERVATION = "INSERT INTO RESERVATION (ROOM_ID, CHECK_IN, CHECK_OUT, GUEST_NAME, CANCELED) VALUES (?,?,?,?,?)";
     private static final String DELETE_RESERVATION = "DELETE FROM RESERVATION WHERE ID = ?";
@@ -25,9 +26,27 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         return instance;
     }
     private ReservationRepositoryImpl(){}
+
     @Override
     public List<Reservation> findGuestReservations(String guestName) {
-        return null;
+        List<Reservation> result = new ArrayList<>();
+        Connection connection = SQLiteJDBCDriverConnection.getConnection();
+        if (connection == null) {
+            return result;
+        }
+        try {
+            PreparedStatement statement = connection.prepareStatement(FIND_GUEST_RESERVATION);
+            statement.setString(1, guestName);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                result.add( getReservationFromResultSet(resultSet));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            SQLiteJDBCDriverConnection.closeConnection(connection);
+        }
+        return result;
     }
 
     @Override

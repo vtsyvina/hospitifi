@@ -3,6 +3,18 @@ package com.hospitifi.model;
 import java.util.Calendar;
 import java.util.Objects;
 
+/**
+ * Example of how to create reservation:
+ * Calendar in = GregorianCalendar.getInstance();
+ * in.set(Calendar.YEAR, 1996);
+ * in.set(Calendar.MONTH, 2);
+ * in.set(Calendar.DAY_OF_MONTH, 13);
+ * Calendar out = GregorianCalendar.getInstance();
+ * out.set(Calendar.YEAR, 2017);
+ * out.set(Calendar.MONTH, 11);
+ * out.set(Calendar.DAY_OF_MONTH, 28);
+ * Reservation reservation = new Reservation(0, 1, in, out, "John Snow", false);
+ */
 public class Reservation {
     private long id;
     private long roomId;

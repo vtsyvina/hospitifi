@@ -1,5 +1,6 @@
 package com.hospitifi.model;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 
@@ -9,15 +10,15 @@ public class Occupation {
     private int adults;
     private int children;
     private String guestName;
-    private Date start;
-    private Date end;
+    private Calendar start;
+    private Calendar end;
     private boolean breakfastIncluded;
     private int rate;
 
     public Occupation() {
     }
 
-    public Occupation(long id, long roomId, int adults, int children, String guestName, Date start, Date end, boolean breakfastIncluded, int rate) {
+    public Occupation(long id, long roomId, int adults, int children, String guestName, Calendar start, Calendar end, boolean breakfastIncluded, int rate) {
         this.id = id;
         this.roomId = roomId;
         this.adults = adults;
@@ -69,19 +70,19 @@ public class Occupation {
         this.guestName = guestName;
     }
 
-    public Date getStart() {
+    public Calendar getStart() {
         return start;
     }
 
-    public void setStart(Date start) {
+    public void setStart(Calendar start) {
         this.start = start;
     }
 
-    public Date getEnd() {
+    public Calendar getEnd() {
         return end;
     }
 
-    public void setEnd(Date end) {
+    public void setEnd(Calendar end) {
         this.end = end;
     }
 

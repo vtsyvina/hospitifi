@@ -1,9 +1,11 @@
 package com.hospitifi.util;
 
 import com.hospitifi.service.EmployeeService;
+import com.hospitifi.service.OccupationService;
 import com.hospitifi.service.RoomService;
 import com.hospitifi.service.UserService;
 import com.hospitifi.service.impl.EmployeeServiceImpl;
+import com.hospitifi.service.impl.OccupationServiceImpl;
 import com.hospitifi.service.impl.RoomServiceImpl;
 import com.hospitifi.service.impl.UserServiceImpl;
 
@@ -25,5 +27,9 @@ public class ServiceFactory {
 
     public static UserService getUserService(){
         return UserServiceImpl.getInstance();
+    }
+
+    public static OccupationService getOccupationService(){
+        return OccupationServiceImpl.getInstance();
     }
 }
