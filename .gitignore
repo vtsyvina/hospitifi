@@ -27,3 +27,7 @@ db/hospitifi.db
 
 #eclipse file
 .classpath
+.project
+
+bin/*
+
