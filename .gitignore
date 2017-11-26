@@ -24,3 +24,6 @@ hs_err_pid*
 
 #it's just working db
 db/hospitifi.db
+
+#eclipse file
+.classpath
