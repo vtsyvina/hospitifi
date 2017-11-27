@@ -2,12 +2,18 @@ package com.hospitifi.fxml;
 
 import com.hospitifi.model.Room;
 import com.hospitifi.model.User;
+import com.hospitifi.service.EmployeeService;
+import com.hospitifi.service.OccupationService;
+import com.hospitifi.service.RoomService;
 import com.hospitifi.service.UserService;
 import com.hospitifi.service.impl.UserServiceImpl;
+import com.hospitifi.util.ServiceFactory;
+
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -17,12 +23,16 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -44,11 +54,17 @@ public class FXMLDocumentController implements Initializable {
 	@FXML
 	Button logoutButton;
 	
+	private UserService userService = ServiceFactory.getUserService();
+	private RoomService roomService = ServiceFactory.getRoomService();
+	private EmployeeService employeeService = ServiceFactory.getEmployeeService();
+	private OccupationService occupationService = ServiceFactory.getOccupationService();
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		// "invalid login/password" message will be invisible by default
-		if (invalidCombination != null) {
-			invalidCombination.setVisible(false);
+		//any code here will be called every time scene changes
+		//(after all @FXML annotated members have been injected)
+		if(userService.getCurrentUserRole() == null) {
+			configureLogin();
 		}
 	}
 	
@@ -70,6 +86,47 @@ public class FXMLDocumentController implements Initializable {
 	        return controller;
 	    });
 	    return (Parent) loader.load();
+	}
+	
+	public void configureLogin(){
+		
+		// "invalid login/password" message will be invisible by default
+		if (invalidCombination != null) {
+			invalidCombination.setVisible(false);
+		}
+		
+		// attempt login when enter key is pressed and while login TextField has focus
+		login.setOnKeyPressed(new EventHandler<KeyEvent>()
+	    {
+	        @Override
+	        public void handle(KeyEvent ke)
+	        {
+	            if (ke.getCode().equals(KeyCode.ENTER))
+	            {
+	            	try {
+						handleLoginButton(new ActionEvent());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+	            }
+	        }
+	    });
+		// attempt login when enter key is pressed and while password TextField has focus
+		password.setOnKeyPressed(new EventHandler<KeyEvent>()
+	    {
+	        @Override
+	        public void handle(KeyEvent ke)
+	        {
+	            if (ke.getCode().equals(KeyCode.ENTER))
+	            {
+	            	try {
+						handleLoginButton(new ActionEvent());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+	            }
+	        }
+	    });
 	}
 	
 	@FXML
@@ -110,7 +167,8 @@ public class FXMLDocumentController implements Initializable {
 	@FXML
 	private void handleLogoutButton(ActionEvent event) throws IOException{
 		Stage stage = (Stage) logoutButton.getScene().getWindow();  
-		Parent root = load(getClass().getResource("Login.fxml"), null, this);    
+		Parent root = load(getClass().getResource("Login.fxml"), null, this);  
+		configureLogin();
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		stage.show();
@@ -123,7 +181,7 @@ public class FXMLDocumentController implements Initializable {
 	
 	
 	
-	//AdminMenu
+	//AdminMenu code section
 	@FXML
 	Button newUser;
 	@FXML
@@ -177,18 +235,37 @@ public class FXMLDocumentController implements Initializable {
 	@FXML
 	ChoiceBox<String> roleAdminEditChoiceBox = new ChoiceBox<>();
 	@FXML
-	ChoiceBox<String> choiceBox = new ChoiceBox<>();
-	
-	private UserService userService = UserServiceImpl.getInstance();
+	RadioButton adminUsersRadioButton;
+	@FXML
+	RadioButton adminRoomsRadioButton;
 	
 	private ObservableList<User> userData;
 	
-	public void configureAdmin() {  //initial setup for admin menu
-
+	private void configureAdmin() {  //initial setup for admin menu
+		
+		//ToggleGroup only allows one RadioButton to be selected at a time
+		ToggleGroup tg = new ToggleGroup();
+		adminUsersRadioButton.setToggleGroup(tg);
+		adminRoomsRadioButton.setToggleGroup(tg);
+		adminUsersRadioButton.fire(); //Users RadioButton selected by default
+		adminUsersRadioButton.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent ae) {
+				System.out.println("users selected.");
+				userPane.setVisible(true);
+				roomPane.setVisible(false);
+			}
+		});
+		adminRoomsRadioButton.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent ae) {
+				System.out.println("rooms selected.");
+				userPane.setVisible(false);
+				roomPane.setVisible(true);
+			}
+		});
 		roleAdminEditChoiceBox.setItems(FXCollections.observableArrayList("admin","manager","receptionist"));
 		
 		userTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		roomTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		//roomTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		userIdCol.setCellValueFactory(new PropertyValueFactory<>("userId"));
 		userLoginCol.setCellValueFactory(new PropertyValueFactory<>("userLogin"));
 		userPasswordCol.setCellValueFactory(new PropertyValueFactory<>("userPassword"));
@@ -198,7 +275,6 @@ public class FXMLDocumentController implements Initializable {
 		userData.addAll(userService.getAll());
 		userTable.setItems(userData);
 	}
-	
 	
 	public void newUserClicked(ActionEvent event) {
 		User user = new User(Long.parseLong(idAdminEdit.getText()), loginAdminEdit.getText(), 
@@ -228,12 +304,12 @@ public class FXMLDocumentController implements Initializable {
 	
 	
 	
-	//ManagerMenu
+	//ManagerMenu code section
 	private void configureManager() {
 		//To be written
 	}
 	
-	//ReceptionistMenu
+	//ReceptionistMenu code section
 	private void configureReceptionist() {
 		//To be written
 	}

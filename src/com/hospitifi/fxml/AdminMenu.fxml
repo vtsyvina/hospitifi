@@ -83,7 +83,7 @@
             </SplitPane>
          </children>
       </StackPane>
-      <RadioButton layoutX="599.0" layoutY="133.0" mnemonicParsing="false" text="Rooms" />
-      <RadioButton layoutX="489.0" layoutY="133.0" mnemonicParsing="false" text="Users" />
+      <RadioButton fx:id="adminRoomsRadioButton" layoutX="599.0" layoutY="133.0" mnemonicParsing="false" text="Rooms" />
+      <RadioButton fx:id="adminUsersRadioButton" layoutX="489.0" layoutY="133.0" mnemonicParsing="false" text="Users" />
    </children>
 </AnchorPane>
