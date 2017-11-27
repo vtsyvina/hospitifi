@@ -6,10 +6,8 @@ import com.hospitifi.service.EmployeeService;
 import com.hospitifi.service.OccupationService;
 import com.hospitifi.service.RoomService;
 import com.hospitifi.service.UserService;
-import com.hospitifi.service.impl.UserServiceImpl;
 import com.hospitifi.util.ServiceFactory;
 
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -19,6 +17,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -33,6 +33,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -41,7 +42,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class FXMLDocumentController implements Initializable {
-	
+
 	//Login & general section
 	@FXML
 	Button loginButton;
@@ -53,12 +54,12 @@ public class FXMLDocumentController implements Initializable {
 	Label invalidCombination;
 	@FXML
 	Button logoutButton;
-	
+
 	private UserService userService = ServiceFactory.getUserService();
 	private RoomService roomService = ServiceFactory.getRoomService();
 	private EmployeeService employeeService = ServiceFactory.getEmployeeService();
 	private OccupationService occupationService = ServiceFactory.getOccupationService();
-	
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		//any code here will be called every time scene changes
@@ -67,68 +68,68 @@ public class FXMLDocumentController implements Initializable {
 			configureLogin();
 		}
 	}
-	
-	public static Parent load(final URL url, final ResourceBundle resBundle, final Object controller)
-	        throws IOException {
-		Objects.requireNonNull(url);
-	    Objects.requireNonNull(controller);
-	    
-	    FXMLLoader loader = new FXMLLoader();
-	    loader.setLocation(url);
-	    loader.setResources(resBundle);
 
-	  //controller is synchronized between fxml files with setControllerFactory
-	    loader.setControllerFactory(controllerClass -> {
-	        if (controllerClass != null && !controllerClass.isInstance(controller)) {
-	            throw new IllegalArgumentException("Invalid controller instance, expecting instance of class '" +
-	                    controllerClass.getName() + "'");
-	        }
-	        return controller;
-	    });
-	    return (Parent) loader.load();
+	public static Parent load(final URL url, final ResourceBundle resBundle, final Object controller)
+			throws IOException {
+		Objects.requireNonNull(url);
+		Objects.requireNonNull(controller);
+
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(url);
+		loader.setResources(resBundle);
+
+		//controller is synchronized between fxml files with setControllerFactory
+		loader.setControllerFactory(controllerClass -> {
+			if (controllerClass != null && !controllerClass.isInstance(controller)) {
+				throw new IllegalArgumentException("Invalid controller instance, expecting instance of class '" +
+						controllerClass.getName() + "'");
+			}
+			return controller;
+		});
+		return (Parent) loader.load();
 	}
-	
+
 	public void configureLogin(){
-		
+
 		// "invalid login/password" message will be invisible by default
 		if (invalidCombination != null) {
 			invalidCombination.setVisible(false);
 		}
-		
+
 		// attempt login when enter key is pressed and while login TextField has focus
 		login.setOnKeyPressed(new EventHandler<KeyEvent>()
-	    {
-	        @Override
-	        public void handle(KeyEvent ke)
-	        {
-	            if (ke.getCode().equals(KeyCode.ENTER))
-	            {
-	            	try {
+		{
+			@Override
+			public void handle(KeyEvent ke)
+			{
+				if (ke.getCode().equals(KeyCode.ENTER))
+				{
+					try {
 						handleLoginButton(new ActionEvent());
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-	            }
-	        }
-	    });
-		// attempt login when enter key is pressed and while password TextField has focus
+				}
+			}
+		});
+		// attempt login when enter key is pressed and while PasswordField has focus
 		password.setOnKeyPressed(new EventHandler<KeyEvent>()
-	    {
-	        @Override
-	        public void handle(KeyEvent ke)
-	        {
-	            if (ke.getCode().equals(KeyCode.ENTER))
-	            {
-	            	try {
+		{
+			@Override
+			public void handle(KeyEvent ke)
+			{
+				if (ke.getCode().equals(KeyCode.ENTER))
+				{
+					try {
 						handleLoginButton(new ActionEvent());
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-	            }
-	        }
-	    });
+				}
+			}
+		});
 	}
-	
+
 	@FXML
 	private void handleLoginButton(ActionEvent event) throws IOException{
 		/*
@@ -137,9 +138,9 @@ public class FXMLDocumentController implements Initializable {
 		 */
 		String log = login.getText();
 		String pass = password.getText();
-		
+
 		if ((log != null && pass != null ) && userService.authenticateUser(log, pass)) {
-			
+
 			Stage stage = (Stage) loginButton.getScene().getWindow();  //get reference to button's stage  
 			String role = userService.getCurrentUserRole();
 			Parent root;
@@ -163,7 +164,7 @@ public class FXMLDocumentController implements Initializable {
 			invalidCombination.setVisible(true);
 		}
 	}
-	
+
 	@FXML
 	private void handleLogoutButton(ActionEvent event) throws IOException{
 		Stage stage = (Stage) logoutButton.getScene().getWindow();  
@@ -174,13 +175,13 @@ public class FXMLDocumentController implements Initializable {
 		stage.show();
 		userService.logOut();
 	}
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	//AdminMenu code section
 	@FXML
 	Button newUser;
@@ -238,77 +239,245 @@ public class FXMLDocumentController implements Initializable {
 	RadioButton adminUsersRadioButton;
 	@FXML
 	RadioButton adminRoomsRadioButton;
+	@FXML
+	Label adminDetailId;
+	@FXML
+	Label adminDetailLogin;
+	@FXML
+	Label adminDetailPassword;
+	@FXML
+	Label adminDetailRole;
+	@FXML
+	Label adminMessage;
+	@FXML
+	GridPane adminNewEditUserGridPane;
+	@FXML
+	Button adminUserOkButton;
+	@FXML
+	Button adminUserCancelButton;
 	
 	private ObservableList<User> userData;
-	
+
 	private void configureAdmin() {  //initial setup for admin menu
-		
+
 		//ToggleGroup only allows one RadioButton to be selected at a time
 		ToggleGroup tg = new ToggleGroup();
 		adminUsersRadioButton.setToggleGroup(tg);
 		adminRoomsRadioButton.setToggleGroup(tg);
-		adminUsersRadioButton.fire(); //Users RadioButton selected by default
+		adminUsersRadioButton.setSelected(true); //Users RadioButton selected by default
 		adminUsersRadioButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent ae) {
-				System.out.println("users selected.");
 				userPane.setVisible(true);
 				roomPane.setVisible(false);
+				
 			}
 		});
 		adminRoomsRadioButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent ae) {
-				System.out.println("rooms selected.");
 				userPane.setVisible(false);
 				roomPane.setVisible(true);
 			}
 		});
+
 		roleAdminEditChoiceBox.setItems(FXCollections.observableArrayList("admin","manager","receptionist"));
 		
+		showUserDetails(null); //clear user details
+		adminNewEditUserGridPane.setVisible(false); //user form hidden
+		adminUserOkButton.setVisible(false);
+		adminUserCancelButton.setVisible(false);
+		adminMessage.setText(""); //no message initially
+		
 		userTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		//roomTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		userIdCol.setCellValueFactory(new PropertyValueFactory<>("userId"));
-		userLoginCol.setCellValueFactory(new PropertyValueFactory<>("userLogin"));
-		userPasswordCol.setCellValueFactory(new PropertyValueFactory<>("userPassword"));
-		userRoleCol.setCellValueFactory(new PropertyValueFactory<>("userRole"));
-
+		userTable.getSelectionModel().selectedItemProperty().addListener((observable) -> hideAdminNewEditUser());
+		userTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> showUserDetails(newValue));
+		userIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+		userLoginCol.setCellValueFactory(new PropertyValueFactory<>("login"));
+		userPasswordCol.setCellValueFactory(new PropertyValueFactory<>("passwordHash"));
+		userRoleCol.setCellValueFactory(new PropertyValueFactory<>("role"));
+		
 		userData = FXCollections.observableArrayList();
 		userData.addAll(userService.getAll());
 		userTable.setItems(userData);
 	}
 	
+	private void hideAdminNewEditUser(){
+		adminNewEditUserGridPane.setVisible(false); //user form hidden
+		adminUserOkButton.setVisible(false);
+		adminUserCancelButton.setVisible(false);
+	}
+	
+	private void clearAdminUsersTextFields(){
+		idAdminEdit.clear();
+		loginAdminEdit.clear();
+		passwordAdminEdit.clear();
+	}
+	
+	private void showUserDetails (User user){
+		if (user != null) {
+	        // Fill the labels with info from the user object.
+			adminDetailId.setText(Long.toString(user.getId()));
+			adminDetailLogin.setText(user.getLogin());
+			adminDetailPassword.setText(user.getPasswordHash());
+			adminDetailRole.setText(user.getRole());
+
+	    } else {
+	        // Person is null, remove all the text.
+	    	adminDetailId.setText("");
+	    	adminDetailLogin.setText("");
+	    	adminDetailPassword.setText("");
+	    	adminDetailRole.setText("");
+	    }
+	}
+	
+	@FXML
 	public void newUserClicked(ActionEvent event) {
-		User user = new User(Long.parseLong(idAdminEdit.getText()), loginAdminEdit.getText(), 
-        		passwordAdminEdit.getText(), null, roleAdminEditChoiceBox.getValue());
-        userService.save(user);
-        userData.add(user);
-    }
+		userTable.getSelectionModel().clearSelection();
+		
+		clearAdminUsersTextFields();
+		
+		adminNewEditUserGridPane.setVisible(true);
+		adminUserOkButton.setVisible(true);
+		adminUserCancelButton.setVisible(true);
+	}
+	
+	@FXML
 	public void deleteUserClicked(ActionEvent event) {
-        userService.delete(userTable.getSelectionModel().getSelectedItem().getId());
-        userData.remove(userTable.getSelectionModel().getSelectedItem());
-    }
-	/*private void adminChoiceBoxChoice (String s) {
-		if (s.equals("Users")) {
-			userPane.setVisible(true);
-			roomPane.setVisible(false);
+		int selectedIndex = userTable.getSelectionModel().getSelectedIndex();
+	    if (selectedIndex >= 0) {  //something is selected
+
+			userService.delete(userTable.getSelectionModel().getSelectedItem().getId());
+	    	userTable.getItems().remove(selectedIndex);
+			//userData.remove(userTable.getSelectionModel().getSelectedItem());
+	    	userTable.getSelectionModel().clearSelection();
+	    } else {  // nothing selected
+	    	clearAdminUsersTextFields();
+			hideAdminNewEditUser();
+	        Alert alert = new Alert(AlertType.WARNING);
+	        alert.setGraphic(null);
+	        alert.initOwner(adminMessage.getScene().getWindow());
+	        alert.setTitle("Delete - No Selection");
+	        alert.setHeaderText("No User Selected");
+	        alert.setContentText("Please select a user in the table to delete.");
+	        alert.showAndWait();
+	    }
+	}
+	
+	@FXML
+	public void editUserClicked(ActionEvent event) {
+		int selectedIndex = userTable.getSelectionModel().getSelectedIndex();
+		if (selectedIndex >= 0) {  //something is selected
+
+			idAdminEdit.setText(Long.toString(userTable.getSelectionModel().getSelectedItem().getId()));
+			loginAdminEdit.setText(userTable.getSelectionModel().getSelectedItem().getLogin());
+			passwordAdminEdit.setText(userTable.getSelectionModel().getSelectedItem().getPasswordHash());
+			roleAdminEditChoiceBox.setValue(userTable.getSelectionModel().getSelectedItem().getRole());
+			
+			adminNewEditUserGridPane.setVisible(true);
+			adminUserOkButton.setVisible(true);
+			adminUserCancelButton.setVisible(true);
+			
+	    } else {  // nothing selected
+	    	clearAdminUsersTextFields();
+			hideAdminNewEditUser();
+	        Alert alert = new Alert(AlertType.WARNING);
+	        alert.initOwner(adminMessage.getScene().getWindow());
+	        alert.setTitle("Edit - No Selection");
+	        alert.setHeaderText("No User Selected");
+	        alert.setContentText("Please select a user in the table to edit.");
+	        alert.showAndWait();
+	    }
+	}
+	
+	@FXML
+	public void adminNewEditUserCancelButtonPressed(ActionEvent event) {
+		clearAdminUsersTextFields();
+		hideAdminNewEditUser();
+	}
+	
+	@FXML
+	public void adminNewEditUserOkButtonPressed(ActionEvent event) {
+		int index = userTable.getSelectionModel().getSelectedIndex();
+		if (index < 0 ) { //no cell selected, which results when "New" is pressed
+			if (idAdminEdit == null || loginAdminEdit == null || passwordAdminEdit == null || roleAdminEditChoiceBox.getValue() == null) {
+				Alert alert = new Alert(AlertType.ERROR);
+		        alert.initOwner(adminMessage.getScene().getWindow());
+		        alert.setTitle("Error");
+		        alert.setHeaderText(null);
+		        alert.setContentText("Could not create because one or more entries are blank.");
+		        alert.showAndWait();
+		        return;
+			}
+			for (User user : userData) {
+				if(user.getId() == Long.valueOf(idAdminEdit.getText())) {
+			        Alert alert = new Alert(AlertType.ERROR);
+			        alert.initOwner(adminMessage.getScene().getWindow());
+			        alert.setTitle("Error");
+			        alert.setHeaderText("Could not create because this ID already exists.");
+			        alert.setContentText("Please enter a unique ID.");
+			        alert.showAndWait();
+			        return;
+				}
+				else if(user.getLogin().equals(loginAdminEdit.getText())) {
+					Alert alert = new Alert(AlertType.ERROR);
+			        alert.initOwner(adminMessage.getScene().getWindow());
+			        alert.setTitle("Error");
+			        alert.setHeaderText("Could not create because this login name already exists.");
+			        alert.setContentText("Please enter a unique login name.");
+			        alert.showAndWait();
+			        return;
+				}
+			}
+			User user = new User(Long.valueOf(idAdminEdit.getText()), loginAdminEdit.getText(), null, 
+					passwordAdminEdit.getText(), roleAdminEditChoiceBox.getSelectionModel().getSelectedItem());
+			userService.save(user);
+			
+			userTable.getItems().add(user);
+			userTable.getSelectionModel().clearSelection();
+			
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Success");
+			alert.setHeaderText(null);
+			alert.setContentText("User was successfully added.");
+			alert.showAndWait();
 		}
-		else {
-			roomPane.setVisible(true);
-			userPane.setVisible(false);
+		else { //"Edit" button was pressed
+			if (idAdminEdit == null || loginAdminEdit == null || passwordAdminEdit == null || roleAdminEditChoiceBox.getValue() == null) {
+				Alert alert = new Alert(AlertType.ERROR);
+		        alert.initOwner(adminMessage.getScene().getWindow());
+		        alert.setTitle("Error");
+		        alert.setHeaderText(null);
+		        alert.setContentText("Could not create because one or more entries are blank.");
+		        alert.showAndWait();
+		        return;
+			}
+			User user = new User(Long.valueOf(idAdminEdit.getText()), loginAdminEdit.getText(), null, 
+					passwordAdminEdit.getText(), roleAdminEditChoiceBox.getSelectionModel().getSelectedItem());
+			userService.update(user);
+			
+			userTable.getItems().add(index, user);
+			userTable.getItems().remove(index + 1);
+			userTable.getSelectionModel().clearSelection();
+			
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Success");
+			alert.setHeaderText(null);
+			alert.setContentText("User was successfully edited.");
+			alert.showAndWait();
 		}
-	}*/
+	}
 	
 	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	//ManagerMenu code section
 	private void configureManager() {
 		//To be written
 	}
-	
+
 	//ReceptionistMenu code section
 	private void configureReceptionist() {
 		//To be written
