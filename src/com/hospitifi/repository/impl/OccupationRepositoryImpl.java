@@ -164,16 +164,16 @@ public class OccupationRepositoryImpl implements OccupationRepository {
 
     private Occupation getOccupationFromResultSet(ResultSet resultSet) throws SQLException{
         Calendar in = GregorianCalendar.getInstance();
-        in.setTime(resultSet.getDate("CHECK_IN"));
+        in.setTime(resultSet.getDate("DATE_START"));
         Calendar out = GregorianCalendar.getInstance();
-        out.setTime(resultSet.getDate("CHECK_OUT"));
+        out.setTime(resultSet.getDate("DATE_END"));
         return new Occupation(resultSet.getLong("ID"),
                 resultSet.getLong("ROOM_ID"),
                 resultSet.getInt("ADULTS"),
                 resultSet.getInt("CHILDREN"),
                 resultSet.getString("GUEST_NAME"),
                 in , out,
-                resultSet.getInt("CANCELED") == 1,
+                resultSet.getInt("BREAKFAST_INCLUDED") == 1,
                 resultSet.getInt("RATE"));
     }
 }

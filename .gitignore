@@ -30,4 +30,5 @@ db/hospitifi.db
 .project
 
 bin/*
+reports
 
