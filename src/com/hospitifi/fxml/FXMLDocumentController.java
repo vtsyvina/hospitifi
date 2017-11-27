@@ -31,7 +31,8 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class FXMLDocumentController implements Initializable {
-
+	
+	//Login & general section
 	@FXML
 	Button loginButton;
 	@FXML
@@ -42,118 +43,12 @@ public class FXMLDocumentController implements Initializable {
 	Label invalidCombination;
 	@FXML
 	Button logoutButton;
-	@FXML
-	Button newUser;
-	@FXML
-	Button deleteUser;
-	@FXML
-	Button editUser;
-	@FXML
-	Button newRoom;
-	@FXML
-	Button deleteRoom;
-	@FXML
-	Button editRoom;
-	@FXML
-	ChoiceBox<String> choiceBox = new ChoiceBox<String>();
-	@FXML
-	SplitPane userPane;
-	@FXML
-	SplitPane roomPane;
-	@FXML
-	TableView<User> userTable;
-	@FXML
-	TableView<Room> roomTable;
-	@FXML
-	TableColumn<User, Long> userIdCol;
-	@FXML
-	TableColumn<User, String> userLoginCol;
-	@FXML
-	TableColumn<User, String> userPasswordCol;
-	@FXML
-	TableColumn<User, String> userRoleCol;
-	@FXML
-	TableColumn<Room, Long> roomIdCol;
-	@FXML
-	TableColumn<Room, String> roomNumberCol;
-	@FXML
-	TableColumn<Room, Integer> roomFloorCol;
-	@FXML
-	TableColumn<Room, Integer> roomBedsCol;
-	@FXML
-	TableColumn<Room, Integer> roomBedTypeCol;
-	@FXML
-	TableColumn<Room, Boolean> roomSafeCol;
-	@FXML
-	TableColumn<Room, Boolean> roomBathCol;
-	@FXML
-	TableColumn<Room, Integer> roomRateCategoryCol;
-	@FXML
-	TextField idAdminEdit;
-	@FXML
-	TextField loginAdminEdit;
-	@FXML
-	TextField passwordAdminEdit;
-	@FXML
-	ChoiceBox<String> roleAdminEdit = new ChoiceBox<>();
-	
-	private UserService userService = UserServiceImpl.getInstance();;
-	
-	private ObservableList<User> data;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		// "invalid login/password" message will be invisible by default
 		if (invalidCombination != null) {
 			invalidCombination.setVisible(false);
-		}
-	}
-//
-	public void configureAdmin() {  //initial setup for admin menu.
-		//if (userPane != null) userPane.setVisible(false);
-		//if (roomPane != null) roomPane.setVisible(false);
-		choiceBox.setItems(FXCollections.observableArrayList("Users","Rooms"));
-		roleAdminEdit.setItems(FXCollections.observableArrayList("admin","manager","receptionist"));
-		choiceBox.getSelectionModel().selectedItemProperty().addListener( 
-				(ObservableValue<? extends String> observable, String oldValue, String newValue) -> 
-				adminChoiceBoxChoice(newValue) );
-		
-		userTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		roomTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		userIdCol.setCellValueFactory(new PropertyValueFactory<>("userId"));
-		userLoginCol.setCellValueFactory(new PropertyValueFactory<>("userLogin"));
-		userPasswordCol.setCellValueFactory(new PropertyValueFactory<>("userPassword"));
-		userRoleCol.setCellValueFactory(new PropertyValueFactory<>("userRole"));
-
-		data = FXCollections.observableArrayList();
-		data.addAll(userService.getAll());
-		userTable.setItems(data);
-	}
-	private void configureManager() {
-		//To be written
-	}
-	private void configureReceptionist() {
-		//To be written
-	}
-	
-	public void newUserClicked(ActionEvent event) {
-		User user = new User(Long.parseLong(idAdminEdit.getText()), loginAdminEdit.getText(), 
-        		passwordAdminEdit.getText(), null, roleAdminEdit.getValue());
-        userService.save(user);
-        data.add(user);
-    }
-	public void deleteUserClicked(ActionEvent event) {
-        userService.delete(userTable.getSelectionModel().getSelectedItem().getId());
-        data.remove(userTable.getSelectionModel().getSelectedItem());
-    }
-	private void adminChoiceBoxChoice (String s) {
-		if (s.equals("Users")) {
-			userPane.setVisible(true);
-			roomPane.setVisible(false);
-		}
-		else {
-			roomPane.setVisible(true);
-			userPane.setVisible(false);
 		}
 	}
 	
@@ -220,5 +115,126 @@ public class FXMLDocumentController implements Initializable {
 		stage.setScene(scene);
 		stage.show();
 		userService.logOut();
+	}
+	
+	
+	
+	
+	
+	
+	
+	//AdminMenu
+	@FXML
+	Button newUser;
+	@FXML
+	Button deleteUser;
+	@FXML
+	Button editUser;
+	@FXML
+	Button newRoom;
+	@FXML
+	Button deleteRoom;
+	@FXML
+	Button editRoom;
+	@FXML
+	SplitPane userPane;
+	@FXML
+	SplitPane roomPane;
+	@FXML
+	TableView<User> userTable;
+	@FXML
+	TableView<Room> roomTable;
+	@FXML
+	TableColumn<User, Long> userIdCol;
+	@FXML
+	TableColumn<User, String> userLoginCol;
+	@FXML
+	TableColumn<User, String> userPasswordCol;
+	@FXML
+	TableColumn<User, String> userRoleCol;
+	@FXML
+	TableColumn<Room, Long> roomIdCol;
+	@FXML
+	TableColumn<Room, String> roomNumberCol;
+	@FXML
+	TableColumn<Room, Integer> roomFloorCol;
+	@FXML
+	TableColumn<Room, Integer> roomBedsCol;
+	@FXML
+	TableColumn<Room, Integer> roomBedTypeCol;
+	@FXML
+	TableColumn<Room, Boolean> roomSafeCol;
+	@FXML
+	TableColumn<Room, Boolean> roomBathCol;
+	@FXML
+	TableColumn<Room, Integer> roomRateCategoryCol;
+	@FXML
+	TextField idAdminEdit;
+	@FXML
+	TextField loginAdminEdit;
+	@FXML
+	TextField passwordAdminEdit;
+	@FXML
+	ChoiceBox<String> roleAdminEditChoiceBox = new ChoiceBox<>();
+	@FXML
+	ChoiceBox<String> choiceBox = new ChoiceBox<>();
+	
+	private UserService userService = UserServiceImpl.getInstance();
+	
+	private ObservableList<User> userData;
+	
+	public void configureAdmin() {  //initial setup for admin menu
+
+		roleAdminEditChoiceBox.setItems(FXCollections.observableArrayList("admin","manager","receptionist"));
+		
+		userTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		roomTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		userIdCol.setCellValueFactory(new PropertyValueFactory<>("userId"));
+		userLoginCol.setCellValueFactory(new PropertyValueFactory<>("userLogin"));
+		userPasswordCol.setCellValueFactory(new PropertyValueFactory<>("userPassword"));
+		userRoleCol.setCellValueFactory(new PropertyValueFactory<>("userRole"));
+
+		userData = FXCollections.observableArrayList();
+		userData.addAll(userService.getAll());
+		userTable.setItems(userData);
+	}
+	
+	
+	public void newUserClicked(ActionEvent event) {
+		User user = new User(Long.parseLong(idAdminEdit.getText()), loginAdminEdit.getText(), 
+        		passwordAdminEdit.getText(), null, roleAdminEditChoiceBox.getValue());
+        userService.save(user);
+        userData.add(user);
+    }
+	public void deleteUserClicked(ActionEvent event) {
+        userService.delete(userTable.getSelectionModel().getSelectedItem().getId());
+        userData.remove(userTable.getSelectionModel().getSelectedItem());
+    }
+	/*private void adminChoiceBoxChoice (String s) {
+		if (s.equals("Users")) {
+			userPane.setVisible(true);
+			roomPane.setVisible(false);
+		}
+		else {
+			roomPane.setVisible(true);
+			userPane.setVisible(false);
+		}
+	}*/
+	
+	
+	
+	
+	
+	
+	
+	
+	//ManagerMenu
+	private void configureManager() {
+		//To be written
+	}
+	
+	//ReceptionistMenu
+	private void configureReceptionist() {
+		//To be written
 	}
 }

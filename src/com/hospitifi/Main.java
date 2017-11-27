@@ -14,7 +14,7 @@ public class Main extends Application {
 			AnchorPane root = (AnchorPane)FXMLLoader.load(getClass().getResource("fxml/Login.fxml"));
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("fxml/application.css").toExternalForm());
-			primaryStage.setTitle("Hospitifi init");
+			primaryStage.setTitle("Hospitifi");
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {
