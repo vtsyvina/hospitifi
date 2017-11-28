@@ -21,7 +21,7 @@ import javafx.stage.Stage;
 public class ReceptionistController implements Initializable{
 	
 	@FXML
-	Button logoutButton;
+	private Button logoutButton;
 	
 	private UserService userService = ServiceFactory.getUserService();
 	

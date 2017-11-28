@@ -121,17 +121,17 @@ public class AdminController implements Initializable{
 		adminUsersRadioButton.setToggleGroup(tg);
 		adminRoomsRadioButton.setToggleGroup(tg);
 		adminUsersRadioButton.setSelected(true); //Users RadioButton selected by default
+		userPane.toFront();
+		
 		adminUsersRadioButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent ae) {
-				userPane.setVisible(true);
-				roomPane.setVisible(false);
-
+				userPane.toFront();
 			}
 		});
+		
 		adminRoomsRadioButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent ae) {
-				userPane.setVisible(false);
-				roomPane.setVisible(true);
+				roomPane.toFront();
 			}
 		});
 
@@ -151,8 +151,10 @@ public class AdminController implements Initializable{
 		userRoleCol.setCellValueFactory(new PropertyValueFactory<>("role"));
 
 		userData = FXCollections.observableArrayList();
-		userData.addAll(userService.getAll());
-		userTable.setItems(userData);
+		
+		userData.addAll(userService.getAll());         //build data into list from database
+		
+		userTable.setItems(userData);               //use list in table
 	}
 
 	private void hideAdminNewEditUser(){
@@ -169,9 +171,9 @@ public class AdminController implements Initializable{
 	private void showUserDetails (User user){
 		if (user != null) {
 			// Fill the labels with info from the user object.
-			adminDetailLogin.setText(":   " + user.getLogin());
-			adminDetailPassword.setText(":   " + user.getPasswordHash());
-			adminDetailRole.setText(":   " + user.getRole());
+			adminDetailLogin.setText(":    " + user.getLogin());
+			adminDetailPassword.setText(":    " + user.getPasswordHash());
+			adminDetailRole.setText(":    " + user.getRole());
 
 		} else {
 			// Person is null, remove all the text.
@@ -182,7 +184,7 @@ public class AdminController implements Initializable{
 	}
 
 	@FXML
-	public void newUserClicked(ActionEvent event) {
+	private void newUserClicked(ActionEvent event) {
 		userTable.getSelectionModel().clearSelection();
 
 		clearAdminUsersTextFields();
@@ -193,7 +195,7 @@ public class AdminController implements Initializable{
 	}
 
 	@FXML
-	public void deleteUserClicked(ActionEvent event) {
+	private void deleteUserClicked(ActionEvent event) {
 		int selectedIndex = userTable.getSelectionModel().getSelectedIndex();
 		if (selectedIndex >= 0) {  //something is selected
 			
@@ -225,12 +227,12 @@ public class AdminController implements Initializable{
 	}
 
 	@FXML
-	public void editUserClicked(ActionEvent event) {
+	private void editUserClicked(ActionEvent event) {
 		int selectedIndex = userTable.getSelectionModel().getSelectedIndex();
 		if (selectedIndex >= 0) {  //something is selected
 
 			loginAdminEdit.setText(userTable.getSelectionModel().getSelectedItem().getLogin());
-			passwordAdminEdit.setText(userTable.getSelectionModel().getSelectedItem().getPasswordHash());
+			passwordAdminEdit.setText(userTable.getSelectionModel().getSelectedItem().getPassword());
 			roleAdminEditChoiceBox.setValue(userTable.getSelectionModel().getSelectedItem().getRole());
 
 			adminNewEditUserGridPane.setVisible(true);
@@ -250,16 +252,19 @@ public class AdminController implements Initializable{
 	}
 
 	@FXML
-	public void adminNewEditUserCancelButtonPressed(ActionEvent event) {
+	private void adminNewEditUserCancelButtonPressed(ActionEvent event) {
 		clearAdminUsersTextFields();
 		hideAdminNewEditUser();
 	}
 
 	@FXML
-	public void adminNewEditUserOkButtonPressed(ActionEvent event) {
+	private void adminNewEditUserOkButtonPressed(ActionEvent event) {
 		int index = userTable.getSelectionModel().getSelectedIndex();
-		if (index < 0 ) { //no cell selected, which results when "New" is pressed
-			if (loginAdminEdit == null || passwordAdminEdit == null || roleAdminEditChoiceBox.getValue() == null) {
+		if (index < 0 ) {        //no cell selected, which means "New" is pressed
+			String log = loginAdminEdit.getText();
+			String pass = passwordAdminEdit.getText();
+			if (log == null || pass == null || roleAdminEditChoiceBox.getValue() == null 
+					|| log == "" || pass == "") {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.initOwner(adminDetailLogin.getScene().getWindow());
 				alert.setTitle("Error");
@@ -279,8 +284,9 @@ public class AdminController implements Initializable{
 					return;
 				}
 			}
-			User user = new User(1234, loginAdminEdit.getText(), null, 
-					passwordAdminEdit.getText(), roleAdminEditChoiceBox.getSelectionModel().getSelectedItem());
+			
+			User user = new User(1234, loginAdminEdit.getText(), passwordAdminEdit.getText(), 
+					null, roleAdminEditChoiceBox.getSelectionModel().getSelectedItem());
 			
 			userService.save(user);
 			
@@ -299,7 +305,10 @@ public class AdminController implements Initializable{
 		}
 		
 		else {//"Edit" button was pressed
-			if (loginAdminEdit == null || passwordAdminEdit == null || roleAdminEditChoiceBox.getValue() == null) {
+			String log = loginAdminEdit.getText();
+			String pass = passwordAdminEdit.getText();
+			if (log == null || pass == null || roleAdminEditChoiceBox.getValue() == null 
+					|| log == "" || pass == "") {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.initOwner(adminDetailLogin.getScene().getWindow());
 				alert.setTitle("Error");
@@ -308,8 +317,8 @@ public class AdminController implements Initializable{
 				alert.showAndWait();
 				return;
 			}
-			User user = new User(1234, loginAdminEdit.getText(), null, 
-					passwordAdminEdit.getText(), roleAdminEditChoiceBox.getSelectionModel().getSelectedItem());
+			
+			User user = userTable.getSelectionModel().getSelectedItem();
 			
 			userService.update(user);
 
