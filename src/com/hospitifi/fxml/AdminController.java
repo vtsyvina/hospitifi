@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import com.hospitifi.model.BedType;
 import com.hospitifi.model.Room;
 import com.hospitifi.model.User;
 import com.hospitifi.service.RoomService;
@@ -22,6 +23,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -33,6 +35,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
@@ -59,27 +62,11 @@ public class AdminController implements Initializable{
 	@FXML
 	TableView<User> userTable;
 	@FXML
-	TableView<Room> roomTable;
-	@FXML
 	TableColumn<User, String> userLoginCol;
 	@FXML
 	TableColumn<User, String> userPasswordCol;
 	@FXML
 	TableColumn<User, String> userRoleCol;
-	@FXML
-	TableColumn<Room, String> roomNumberCol;
-	@FXML
-	TableColumn<Room, Integer> roomFloorCol;
-	@FXML
-	TableColumn<Room, Integer> roomBedsCol;
-	@FXML
-	TableColumn<Room, Integer> roomBedTypeCol;
-	@FXML
-	TableColumn<Room, Boolean> roomSafeCol;
-	@FXML
-	TableColumn<Room, Boolean> roomBathCol;
-	@FXML
-	TableColumn<Room, Integer> roomRateCategoryCol;
 	@FXML
 	TextField loginAdminEdit;
 	@FXML
@@ -104,11 +91,9 @@ public class AdminController implements Initializable{
 	Button adminUserCancelButton;
 
 	private UserService userService = ServiceFactory.getUserService();
-	
-	private RoomService roomService = ServiceFactory.getRoomService();
-	
-	private ObservableList<User> userData;
 
+	private ObservableList<User> userData;
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		configureAdmin();
@@ -135,22 +120,39 @@ public class AdminController implements Initializable{
 			}
 		});
 
-		roleAdminEditChoiceBox.setItems(FXCollections.observableArrayList("admin","manager","receptionist"));
-
+		bedsChoiceBox.setItems(FXCollections.observableArrayList(1, 2));
+		
+		bedTypeChoiceBox.setItems(FXCollections.observableArrayList(BedType.values()));
+		
 		showUserDetails(null); //clear user details
 		adminNewEditUserGridPane.setVisible(false); //user form hidden
 		adminUserOkButton.setVisible(false);
 		adminUserCancelButton.setVisible(false);
-
+		
+		roomsBottomPane.setVisible(false);
+		
 		userTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		userTable.getSelectionModel().selectedItemProperty().addListener((observable) -> hideAdminNewEditUser());
 		userTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> showUserDetails(newValue));
+		
+		roomTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		roomTable.getSelectionModel().selectedItemProperty().addListener((observable) -> hideRoomsBottomPane());
 		
 		userLoginCol.setCellValueFactory(new PropertyValueFactory<>("login"));
 		userPasswordCol.setCellValueFactory(new PropertyValueFactory<>("passwordHash"));
 		userRoleCol.setCellValueFactory(new PropertyValueFactory<>("role"));
 
+		roomNumberCol.setCellValueFactory(new PropertyValueFactory<>("number"));
+		roomFloorCol.setCellValueFactory(new PropertyValueFactory<>("floor"));
+		roomBedsCol.setCellValueFactory(new PropertyValueFactory<>("beds"));
+		roomBedTypeCol.setCellValueFactory(new PropertyValueFactory<>("bedType"));
+		roomSafeCol.setCellValueFactory(new PropertyValueFactory<>("safe"));
+		roomBathCol.setCellValueFactory(new PropertyValueFactory<>("bath"));
+		roomRateCategoryCol.setCellValueFactory(new PropertyValueFactory<>("rateCategory"));
+		
 		buildUserData();
+		buildRoomData();
+
 	}
 	
 	private void buildUserData() {
@@ -354,4 +356,93 @@ public class AdminController implements Initializable{
 		userService.logOut();
 	}
 	
+	@FXML
+	TableView<Room> roomTable;
+	@FXML
+	TableColumn<Room, String> roomNumberCol;
+	@FXML
+	TableColumn<Room, Integer> roomFloorCol;
+	@FXML
+	TableColumn<Room, Integer> roomBedsCol;
+	@FXML
+	TableColumn<Room, BedType> roomBedTypeCol;
+	@FXML
+	TableColumn<Room, String> roomSafeCol;
+	@FXML
+	TableColumn<Room, String> roomBathCol;
+	@FXML
+	TableColumn<Room, Integer> roomRateCategoryCol;
+	@FXML
+	Button adminRoomOkButton;
+	@FXML
+	Button adminRoomCancelButton;
+	@FXML
+	ChoiceBox<Integer> bedsChoiceBox = new ChoiceBox<>();
+	@FXML
+	ChoiceBox<BedType> bedTypeChoiceBox = new ChoiceBox<>();
+	@FXML
+	TextField roomNumberTextField;
+	@FXML
+	TextField floorNumberTextField;
+	@FXML
+	TextField rateCategoryTextField;
+	@FXML
+	CheckBox safeCheckBox;
+	@FXML
+	CheckBox bathCheckBox;
+	@FXML
+	Label editingCreatingLabel;
+	@FXML
+	AnchorPane roomsBottomPane;
+	
+	private RoomService roomService = ServiceFactory.getRoomService();
+
+	private ObservableList<Room> roomData;
+	
+	private void buildRoomData() {
+		roomData = FXCollections.observableArrayList();
+		
+		roomData.addAll(roomService.getAll());         //build data into list from database
+		
+		roomTable.setItems(roomData);               //use list in table
+	}
+	
+	@FXML
+	private void roomOkPressed(ActionEvent event) {
+		
+	}
+	
+	@FXML
+	private void roomCancelPressed(ActionEvent event) {
+		
+	}
+	
+	@FXML
+	private void newRoomClicked(ActionEvent event) {
+		
+	}
+	
+	@FXML
+	private void editRoomClicked(ActionEvent event) {
+		
+	}
+	
+	@FXML
+	private void deleteRoomClicked(ActionEvent event) {
+		
+	}
+	
+	@FXML
+	private void hideRoomsBottomPane(){
+		roomsBottomPane.setVisible(false);
+	}
+	
+	@FXML
+	private void clearBottomPane(){
+		roomNumberTextField.clear();
+		floorNumberTextField.clear();
+		rateCategoryTextField.clear();
+		bedsChoiceBox.setValue(null);
+		bedTypeChoiceBox.setValue(null);
+	}
 }
