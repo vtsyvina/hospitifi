@@ -119,7 +119,9 @@ public class AdminController implements Initializable{
 				roomPane.toFront();
 			}
 		});
-
+		
+		roleAdminEditChoiceBox.setItems(FXCollections.observableArrayList("admin","manager","receptionist"));
+		
 		bedsChoiceBox.setItems(FXCollections.observableArrayList(1, 2));
 		
 		bedTypeChoiceBox.setItems(FXCollections.observableArrayList(BedType.values()));
@@ -161,6 +163,14 @@ public class AdminController implements Initializable{
 		userData.addAll(userService.getAll());         //build data into list from database
 		
 		userTable.setItems(userData);               //use list in table
+	}
+	
+	private void buildRoomData() {
+		roomData = FXCollections.observableArrayList();
+		
+		roomData.addAll(roomService.getAll());         //build data into list from database
+		
+		roomTable.setItems(roomData);               //use list in table
 	}
 	
 	private void hideAdminNewEditUser(){
@@ -399,13 +409,7 @@ public class AdminController implements Initializable{
 
 	private ObservableList<Room> roomData;
 	
-	private void buildRoomData() {
-		roomData = FXCollections.observableArrayList();
-		
-		roomData.addAll(roomService.getAll());         //build data into list from database
-		
-		roomTable.setItems(roomData);               //use list in table
-	}
+	
 	
 	@FXML
 	private void roomOkPressed(ActionEvent event) {
