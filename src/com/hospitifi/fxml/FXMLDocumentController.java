@@ -151,11 +151,11 @@ public class FXMLDocumentController implements Initializable {
 	@FXML
 	private void handleLogoutButton(ActionEvent event) throws IOException{
 		Stage stage = (Stage) logoutButton.getScene().getWindow();  
-		Parent root = FXMLLoader.load(getClass().getResource("fxml/Login.fxml"));  
-		configureLogin();
+		Parent root = FXMLLoader.load(new File("src/com/hospitifi/fxml/Login.fxml").toURI().toURL());
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		stage.show();
 		userService.logOut();
 	}
+	
 }

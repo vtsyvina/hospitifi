@@ -1,5 +1,6 @@
 package com.hospitifi.fxml;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -60,15 +61,11 @@ public class AdminController implements Initializable{
 	@FXML
 	TableView<Room> roomTable;
 	@FXML
-	TableColumn<User, Long> userIdCol;
-	@FXML
 	TableColumn<User, String> userLoginCol;
 	@FXML
 	TableColumn<User, String> userPasswordCol;
 	@FXML
 	TableColumn<User, String> userRoleCol;
-	@FXML
-	TableColumn<Room, Long> roomIdCol;
 	@FXML
 	TableColumn<Room, String> roomNumberCol;
 	@FXML
@@ -84,8 +81,6 @@ public class AdminController implements Initializable{
 	@FXML
 	TableColumn<Room, Integer> roomRateCategoryCol;
 	@FXML
-	TextField idAdminEdit;
-	@FXML
 	TextField loginAdminEdit;
 	@FXML
 	TextField passwordAdminEdit;
@@ -96,15 +91,11 @@ public class AdminController implements Initializable{
 	@FXML
 	RadioButton adminRoomsRadioButton;
 	@FXML
-	Label adminDetailId;
-	@FXML
 	Label adminDetailLogin;
 	@FXML
 	Label adminDetailPassword;
 	@FXML
 	Label adminDetailRole;
-	@FXML
-	Label adminMessage;
 	@FXML
 	GridPane adminNewEditUserGridPane;
 	@FXML
@@ -150,12 +141,11 @@ public class AdminController implements Initializable{
 		adminNewEditUserGridPane.setVisible(false); //user form hidden
 		adminUserOkButton.setVisible(false);
 		adminUserCancelButton.setVisible(false);
-		adminMessage.setText(""); //no message initially
 
 		userTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		userTable.getSelectionModel().selectedItemProperty().addListener((observable) -> hideAdminNewEditUser());
 		userTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> showUserDetails(newValue));
-		userIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+		
 		userLoginCol.setCellValueFactory(new PropertyValueFactory<>("login"));
 		userPasswordCol.setCellValueFactory(new PropertyValueFactory<>("passwordHash"));
 		userRoleCol.setCellValueFactory(new PropertyValueFactory<>("role"));
@@ -172,7 +162,6 @@ public class AdminController implements Initializable{
 	}
 
 	private void clearAdminUsersTextFields(){
-		idAdminEdit.clear();
 		loginAdminEdit.clear();
 		passwordAdminEdit.clear();
 	}
@@ -180,14 +169,12 @@ public class AdminController implements Initializable{
 	private void showUserDetails (User user){
 		if (user != null) {
 			// Fill the labels with info from the user object.
-			adminDetailId.setText(Long.toString(user.getId()));
 			adminDetailLogin.setText(user.getLogin());
 			adminDetailPassword.setText(user.getPasswordHash());
 			adminDetailRole.setText(user.getRole());
 
 		} else {
 			// Person is null, remove all the text.
-			adminDetailId.setText("");
 			adminDetailLogin.setText("");
 			adminDetailPassword.setText("");
 			adminDetailRole.setText("");
@@ -209,16 +196,19 @@ public class AdminController implements Initializable{
 	public void deleteUserClicked(ActionEvent event) {
 		int selectedIndex = userTable.getSelectionModel().getSelectedIndex();
 		if (selectedIndex >= 0) {  //something is selected
-
+			
+			User user = userTable.getSelectionModel().getSelectedItem();
+			
 			userService.delete(userTable.getSelectionModel().getSelectedItem().getId());
+			
 			userTable.getItems().remove(selectedIndex);
 			//userData.remove(userTable.getSelectionModel().getSelectedItem());
 			userTable.getSelectionModel().clearSelection();
 			
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("User deletion");
-			alert.setHeaderText(null);
-			alert.setContentText("User + " + "was removed.");
+			alert.setHeaderText("User was successfully removed.");
+			alert.setContentText("Removed user: \n" + user);
 			alert.showAndWait();
 			
 		} else {  // nothing selected
@@ -226,7 +216,7 @@ public class AdminController implements Initializable{
 			hideAdminNewEditUser();
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setGraphic(null);
-			alert.initOwner(adminMessage.getScene().getWindow());
+			alert.initOwner(adminDetailLogin.getScene().getWindow());
 			alert.setTitle("Delete - No Selection");
 			alert.setHeaderText("No User Selected");
 			alert.setContentText("Please select a user in the table to delete.");
@@ -239,7 +229,6 @@ public class AdminController implements Initializable{
 		int selectedIndex = userTable.getSelectionModel().getSelectedIndex();
 		if (selectedIndex >= 0) {  //something is selected
 
-			idAdminEdit.setText(Long.toString(userTable.getSelectionModel().getSelectedItem().getId()));
 			loginAdminEdit.setText(userTable.getSelectionModel().getSelectedItem().getLogin());
 			passwordAdminEdit.setText(userTable.getSelectionModel().getSelectedItem().getPasswordHash());
 			roleAdminEditChoiceBox.setValue(userTable.getSelectionModel().getSelectedItem().getRole());
@@ -252,7 +241,7 @@ public class AdminController implements Initializable{
 			clearAdminUsersTextFields();
 			hideAdminNewEditUser();
 			Alert alert = new Alert(AlertType.WARNING);
-			alert.initOwner(adminMessage.getScene().getWindow());
+			alert.initOwner(adminDetailLogin.getScene().getWindow());
 			alert.setTitle("Edit - No Selection");
 			alert.setHeaderText("No User Selected");
 			alert.setContentText("Please select a user in the table to edit.");
@@ -270,9 +259,9 @@ public class AdminController implements Initializable{
 	public void adminNewEditUserOkButtonPressed(ActionEvent event) {
 		int index = userTable.getSelectionModel().getSelectedIndex();
 		if (index < 0 ) { //no cell selected, which results when "New" is pressed
-			if (idAdminEdit == null || loginAdminEdit == null || passwordAdminEdit == null || roleAdminEditChoiceBox.getValue() == null) {
+			if (loginAdminEdit == null || passwordAdminEdit == null || roleAdminEditChoiceBox.getValue() == null) {
 				Alert alert = new Alert(AlertType.ERROR);
-				alert.initOwner(adminMessage.getScene().getWindow());
+				alert.initOwner(adminDetailLogin.getScene().getWindow());
 				alert.setTitle("Error");
 				alert.setHeaderText(null);
 				alert.setContentText("Could not create because one or more entries are blank.");
@@ -280,18 +269,9 @@ public class AdminController implements Initializable{
 				return;
 			}
 			for (User user : userData) {
-				if(user.getId() == Long.valueOf(idAdminEdit.getText())) {
+				if(user.getLogin().equals(loginAdminEdit.getText())) {
 					Alert alert = new Alert(AlertType.ERROR);
-					alert.initOwner(adminMessage.getScene().getWindow());
-					alert.setTitle("Error");
-					alert.setHeaderText("Could not create because this ID already exists.");
-					alert.setContentText("Please enter a unique ID.");
-					alert.showAndWait();
-					return;
-				}
-				else if(user.getLogin().equals(loginAdminEdit.getText())) {
-					Alert alert = new Alert(AlertType.ERROR);
-					alert.initOwner(adminMessage.getScene().getWindow());
+					alert.initOwner(adminDetailLogin.getScene().getWindow());
 					alert.setTitle("Error");
 					alert.setHeaderText("Could not create because this login name already exists.");
 					alert.setContentText("Please enter a unique login name.");
@@ -299,31 +279,33 @@ public class AdminController implements Initializable{
 					return;
 				}
 			}
-			User user = new User(Long.valueOf(idAdminEdit.getText()), loginAdminEdit.getText(), null, 
+			User user = new User(1234, loginAdminEdit.getText(), null, 
 					passwordAdminEdit.getText(), roleAdminEditChoiceBox.getSelectionModel().getSelectedItem());
+			
 			userService.save(user);
 
 			userTable.getItems().add(user);
 			userTable.getSelectionModel().clearSelection();
 
 			Alert alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle("Success");
-			alert.setHeaderText(null);
-			alert.setContentText("User was successfully added.");
+			alert.setTitle(null);
+			alert.setHeaderText("User was successfully added");
+			alert.setContentText("Edited user: \n" + user);
 			alert.showAndWait();
 		}
 		else { //"Edit" button was pressed
-			if (idAdminEdit == null || loginAdminEdit == null || passwordAdminEdit == null || roleAdminEditChoiceBox.getValue() == null) {
+			if (loginAdminEdit == null || passwordAdminEdit == null || roleAdminEditChoiceBox.getValue() == null) {
 				Alert alert = new Alert(AlertType.ERROR);
-				alert.initOwner(adminMessage.getScene().getWindow());
+				alert.initOwner(adminDetailLogin.getScene().getWindow());
 				alert.setTitle("Error");
 				alert.setHeaderText(null);
-				alert.setContentText("Could not create because one or more entries are blank.");
+				alert.setContentText("Could not edit the user because one or more entries are blank.");
 				alert.showAndWait();
 				return;
 			}
-			User user = new User(Long.valueOf(idAdminEdit.getText()), loginAdminEdit.getText(), null, 
+			User user = new User(1234, loginAdminEdit.getText(), null, 
 					passwordAdminEdit.getText(), roleAdminEditChoiceBox.getSelectionModel().getSelectedItem());
+			
 			userService.update(user);
 
 			userTable.getItems().add(index, user);
@@ -332,8 +314,8 @@ public class AdminController implements Initializable{
 
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("User update");
-			alert.setHeaderText(null);
-			alert.setContentText("User was successfully edited.");
+			alert.setHeaderText("User was successfully edited");
+			alert.setContentText("Edited user: \n" + user);
 			alert.showAndWait();
 		}
 	}
@@ -341,10 +323,11 @@ public class AdminController implements Initializable{
 	@FXML
 	private void handleLogoutButton(ActionEvent event) throws IOException{
 		Stage stage = (Stage) logoutButton.getScene().getWindow();  
-		Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Login.fxml"));
+		Parent root = FXMLLoader.load(new File("src/com/hospitifi/fxml/Login.fxml").toURI().toURL());
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		stage.show();
 		userService.logOut();
 	}
+	
 }

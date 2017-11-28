@@ -1,5 +1,6 @@
 package com.hospitifi.fxml;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -38,10 +39,11 @@ public class ManagerController implements Initializable{
 	@FXML
 	private void handleLogoutButton(ActionEvent event) throws IOException{
 		Stage stage = (Stage) logoutButton.getScene().getWindow();  
-		Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Login.fxml"));
+		Parent root = FXMLLoader.load(new File("src/com/hospitifi/fxml/Login.fxml").toURI().toURL());
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		stage.show();
 		userService.logOut();
 	}
+	
 }

@@ -32,3 +32,4 @@ db/hospitifi.db
 bin/*
 reports
 
+*.db-journal
