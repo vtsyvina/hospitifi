@@ -123,7 +123,7 @@
                               <ChoiceBox fx:id="roleAdminEditChoiceBox" prefHeight="9.0" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                            </children>
                         </GridPane>
-                        <Button fx:id="adminUserCancelButton" layoutX="271.0" layoutY="420.0" mnemonicParsing="false" onAction="#adminNewEditUserCancelButtonPressed" text="Cancel" />
+                        <Button fx:id="adminUserCancelButton" layoutX="271.0" layoutY="420.0" mnemonicParsing="false" onAction="#adminUserCancelButtonPressed" text="Cancel" />
                         <Button fx:id="adminUserOkButton" layoutX="172.0" layoutY="420.0" mnemonicParsing="false" onAction="#adminNewEditUserOkButtonPressed" prefHeight="11.0" prefWidth="100.0" text="OK" />
                         <Separator layoutX="16.0" layoutY="60.0" prefWidth="200.0" />
                      </children>
