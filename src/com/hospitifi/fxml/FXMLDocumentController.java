@@ -54,6 +54,9 @@ public class FXMLDocumentController implements Initializable {
 
 	public void configureLogin(){
 
+		login.setPromptText("Login");
+		password.setPromptText("Password");
+		
 		// "invalid login/password" message will be invisible by default
 		if (invalidCombination != null) {
 			invalidCombination.setVisible(false);

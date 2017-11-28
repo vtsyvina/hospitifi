@@ -169,9 +169,9 @@ public class AdminController implements Initializable{
 	private void showUserDetails (User user){
 		if (user != null) {
 			// Fill the labels with info from the user object.
-			adminDetailLogin.setText(user.getLogin());
-			adminDetailPassword.setText(user.getPasswordHash());
-			adminDetailRole.setText(user.getRole());
+			adminDetailLogin.setText(":   " + user.getLogin());
+			adminDetailPassword.setText(":   " + user.getPasswordHash());
+			adminDetailRole.setText(":   " + user.getRole());
 
 		} else {
 			// Person is null, remove all the text.
@@ -283,17 +283,22 @@ public class AdminController implements Initializable{
 					passwordAdminEdit.getText(), roleAdminEditChoiceBox.getSelectionModel().getSelectedItem());
 			
 			userService.save(user);
-
+			
 			userTable.getItems().add(user);
 			userTable.getSelectionModel().clearSelection();
-
+			
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle(null);
 			alert.setHeaderText("User was successfully added");
-			alert.setContentText("Edited user: \n" + user);
+			alert.setContentText("Added user: \n" + user);
 			alert.showAndWait();
+			
+			adminNewEditUserGridPane.setVisible(false);
+			adminUserOkButton.setVisible(false);
+			adminUserCancelButton.setVisible(false);
 		}
-		else { //"Edit" button was pressed
+		
+		else {//"Edit" button was pressed
 			if (loginAdminEdit == null || passwordAdminEdit == null || roleAdminEditChoiceBox.getValue() == null) {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.initOwner(adminDetailLogin.getScene().getWindow());
