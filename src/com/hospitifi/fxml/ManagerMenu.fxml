@@ -45,6 +45,7 @@
                   </Label>
                </children>
             </Pane>
+            <AnchorPane prefHeight="517.0" prefWidth="1125.0" />
          </children>
       </StackPane>
    </children>

@@ -1,15 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="com.hospitifi.fxml.AdminController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospitifi.fxml.ReportsController">
    <children>
-      <ListView layoutX="38.0" layoutY="71.0" prefHeight="237.0" prefWidth="563.0" />
-      <Button layoutX="340.0" layoutY="344.0" mnemonicParsing="false" text="Close" />
-      <Button layoutX="199.0" layoutY="344.0" mnemonicParsing="false" text="Open" />
+      <ListView fx:id="listView" layoutX="38.0" layoutY="51.0" prefHeight="257.0" prefWidth="563.0" />
+      <Button fx:id="openButton" layoutX="95.0" layoutY="336.0" mnemonicParsing="false" onAction="#handleOpen" prefHeight="87.0" prefWidth="218.0" text="Open">
+         <font>
+            <Font size="28.0" />
+         </font>
+      </Button>
+      <Button fx:id="closeButton" layoutX="346.0" layoutY="336.0" mnemonicParsing="false" onAction="#handleClose" prefHeight="87.0" prefWidth="218.0" text="Close Window">
+         <font>
+            <Font size="28.0" />
+         </font>
+      </Button>
    </children>
 </AnchorPane>

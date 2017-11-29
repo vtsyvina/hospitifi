@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 import com.hospitifi.model.Occupation;
 import com.hospitifi.report.ReportComposer;
 import com.hospitifi.service.EmployeeService;
+import com.hospitifi.service.OccupationService;
 import com.hospitifi.service.RoomService;
 import com.hospitifi.service.UserService;
 import com.hospitifi.util.ServiceFactory;
@@ -30,9 +31,15 @@ public class ManagerController implements Initializable{
 	@FXML
 	private Pane menuPane;
 	
+	@FXML
+	private Button createReportButton;
+	
+	@FXML
+	private Pane manageEmployeesButton;
+	
 	private UserService userService = ServiceFactory.getUserService();
 	
-	private EmployeeService employeeService = ServiceFactory.getEmployeeService();
+	private OccupationService occupationservice = ServiceFactory.getOccupationService();
 	
 	private ReportComposer reportComposer;
 	
@@ -59,7 +66,7 @@ public class ManagerController implements Initializable{
 	@FXML
 	private void createReport(ActionEvent event) {
 		
-		//reportComposer.createOccupationReport(new Occupation(), additionalServices, breakfastRate);
+		//reportComposer.createOccupationReport(new Occupation(2, 0, 0, 0, , null, null, false, 0), 1, 1);
 	}
 	
 }

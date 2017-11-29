@@ -27,6 +27,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -50,6 +51,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -657,6 +659,7 @@ public class AdminController implements Initializable{
 
 	@FXML
 	private void handleLogoutButton(ActionEvent event) throws IOException{
+		
 		Stage stage = (Stage) logoutButton.getScene().getWindow();  
 		Parent root = FXMLLoader.load(getClass().getResource("Login.fxml"));
 		Scene scene = new Scene(root);
@@ -665,32 +668,18 @@ public class AdminController implements Initializable{
 		userService.logOut();
 	}
 	
-	@FXML ListView<String> listView;
-	
 	@FXML
 	private void viewReports(ActionEvent event) throws IOException {
+	
 		Stage newStage = new Stage();
-		Parent root = FXMLLoader.load(getClass().getResource("fxml/DocxList.fxml"));
+		Parent root = FXMLLoader.load(getClass().getResource("DocxList.fxml"));
 		Scene scene = new Scene(root);
+		newStage.setTitle("Reports");
 		newStage.setScene(scene);
 		newStage.show();
 		
-		ObservableList<String> list = FXCollections.observableArrayList();
-		list.addAll(docxFiles("resources"));
-		listView.setItems(list);
 	}
-	private List<String> docxFiles(String directory) {
-		List<String> textFiles = new ArrayList<String>();
-		File dir = new File(directory);
-		for (File file : dir.listFiles()) {
-			if (file.getName().endsWith((".txt"))) {
-				textFiles.add(file.getName());
-			}
-		}
-		return textFiles;
-	}
-	
-	
+
 	
 	
 }
