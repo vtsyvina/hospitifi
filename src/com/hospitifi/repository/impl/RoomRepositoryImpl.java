@@ -25,7 +25,7 @@ public class RoomRepositoryImpl implements RoomRepository {
             "(SELECT RATE FROM RATES rt WHERE rt.RATE_CATEGORY = r.RATE_CATEGORY AND DATE_START <= :date AND DATE_END >= :date LIMIT 1) RATE " +
             "FROM ROOM r ";
     private static final String UPDATE_ROOM = "UPDATE ROOM SET NUMBER =?, FLOOR =?, BEDS =?, BEDS_TYPE =?, SAFE =?, BATH =?, RATE_CATEGORY=? WHERE ID = ?";
-    private static final String INSERT_ROOM = "INSERT INTO ROOM (NUMBER, FLOOR, BEDS, BEDS_TYPE, SAFE, BATH, RATE_CATEGORY) VALUES ?,?,?,?,?,?,?";
+    private static final String INSERT_ROOM = "INSERT INTO ROOM (NUMBER, FLOOR, BEDS, BEDS_TYPE, SAFE, BATH, RATE_CATEGORY) VALUES (?,?,?,?,?,?,?)";
     private static final String DELETE_ROOM = "DELETE FROM ROOM WHERE ID = ?";
     private static final String FIND_AVAILABLE_ROOMS = "SELECT ID, NUMBER, FLOOR, BEDS, BEDS_TYPE, SAFE, BATH, RATE_CATEGORY FROM ROOM r " +
             "WHERE (" +
@@ -167,7 +167,7 @@ public class RoomRepositoryImpl implements RoomRepository {
             preparedStatement.setString(1, entity.getNumber());
             preparedStatement.setInt(2, entity.getFloor());
             preparedStatement.setInt(3, entity.getBeds());
-            preparedStatement.setString(4, entity.getBedType().name());
+            preparedStatement.setString(4, entity.getBedType() == null? "" : entity.getBedType().name());
             preparedStatement.setInt(5, entity.hasSafe() ? 1 : 0);
             preparedStatement.setInt(6, entity.hasBath() ? 1 : 0);
             preparedStatement.setInt(7, entity.getRateCategory());
