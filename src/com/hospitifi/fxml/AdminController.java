@@ -1,13 +1,18 @@
 package com.hospitifi.fxml;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import com.hospitifi.model.BedType;
 import com.hospitifi.model.Room;
 import com.hospitifi.model.User;
+import com.hospitifi.report.ReportComposer;
 import com.hospitifi.service.RoomService;
 import com.hospitifi.service.UserService;
 import com.hospitifi.util.ServiceFactory;
@@ -29,6 +34,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
@@ -43,6 +49,7 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -134,6 +141,8 @@ public class AdminController implements Initializable{
 	Label editingCreatingLabel;
 	@FXML
 	AnchorPane roomsBottomPane;
+	@FXML
+	Button reportsButton;
 	
 	private UserService userService = ServiceFactory.getUserService();
 	
@@ -142,6 +151,8 @@ public class AdminController implements Initializable{
 	private ObservableList<User> userData;
 	
 	private ObservableList<Room> roomData;
+	
+	private ReportComposer reportComposer;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -654,6 +665,32 @@ public class AdminController implements Initializable{
 		userService.logOut();
 	}
 	
-
-
+	@FXML ListView<String> listView;
+	
+	@FXML
+	private void viewReports(ActionEvent event) throws IOException {
+		Stage newStage = new Stage();
+		Parent root = FXMLLoader.load(getClass().getResource("fxml/DocxList.fxml"));
+		Scene scene = new Scene(root);
+		newStage.setScene(scene);
+		newStage.show();
+		
+		ObservableList<String> list = FXCollections.observableArrayList();
+		list.addAll(docxFiles("resources"));
+		listView.setItems(list);
+	}
+	private List<String> docxFiles(String directory) {
+		List<String> textFiles = new ArrayList<String>();
+		File dir = new File(directory);
+		for (File file : dir.listFiles()) {
+			if (file.getName().endsWith((".txt"))) {
+				textFiles.add(file.getName());
+			}
+		}
+		return textFiles;
+	}
+	
+	
+	
+	
 }

@@ -15,10 +15,37 @@
          </image>
       </ImageView>
       <Button fx:id="logoutButton" layoutX="1131.0" layoutY="32.0" mnemonicParsing="false" onAction="#handleLogoutButton" prefHeight="47.0" prefWidth="118.0" text="Log Out" />
-      <Label layoutX="303.0" layoutY="215.0" prefHeight="329.0" prefWidth="728.0" text="This will be Receptionist Menu.">
+      <Label layoutX="514.0" layoutY="59.0" prefHeight="49.0" prefWidth="272.0" text="Receptionist Menu">
          <font>
-            <Font size="51.0" />
+            <Font name="System Bold" size="30.0" />
          </font>
       </Label>
+      <StackPane layoutX="40.0" layoutY="142.0" prefHeight="607.0" prefWidth="1197.0">
+         <children>
+            <Pane fx:id="menuPane" prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <VBox layoutX="378.0" layoutY="145.0" prefHeight="380.0" prefWidth="442.0" spacing="25.0">
+                     <children>
+                        <Button mnemonicParsing="false" prefHeight="100.0" prefWidth="442.0" text="Check In / Check Out">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Button>
+                        <Button mnemonicParsing="false" prefHeight="100.0" prefWidth="524.0" text="Reservations">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </VBox>
+                  <Label layoutX="532.0" layoutY="33.0" prefHeight="49.0" prefWidth="133.0" text="Welcome.">
+                     <font>
+                        <Font size="30.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
+         </children>
+      </StackPane>
    </children>
 </AnchorPane>

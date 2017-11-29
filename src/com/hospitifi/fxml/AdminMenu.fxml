@@ -20,7 +20,7 @@
          </image>
       </ImageView>
       <Button fx:id="logoutButton" layoutX="1113.0" layoutY="36.0" mnemonicParsing="false" onAction="#handleLogoutButton" prefHeight="44.0" prefWidth="118.0" text="Log Out" />
-      <Button layoutX="895.0" layoutY="37.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="177.0" text="View Reports">
+      <Button fx:id="reportsButton" layoutX="895.0" layoutY="37.0" mnemonicParsing="false" onAction="#viewReports" prefHeight="44.0" prefWidth="177.0" text="View Reports">
          <tooltip>
             <Tooltip text="View manager's reports" />
          </tooltip>

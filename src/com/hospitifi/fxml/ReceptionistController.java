@@ -16,12 +16,16 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class ReceptionistController implements Initializable{
 	
 	@FXML
 	private Button logoutButton;
+	
+	@FXML
+	private Pane menuPane;
 	
 	private UserService userService = ServiceFactory.getUserService();
 	
@@ -33,7 +37,7 @@ public class ReceptionistController implements Initializable{
 	}
 	
 	private void configureReceptionist() {
-		//To be written
+		menuPane.toFront();
 	}
 	
 	@FXML

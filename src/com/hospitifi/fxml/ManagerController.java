@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import com.hospitifi.model.Occupation;
+import com.hospitifi.report.ReportComposer;
+import com.hospitifi.service.EmployeeService;
 import com.hospitifi.service.RoomService;
 import com.hospitifi.service.UserService;
 import com.hospitifi.util.ServiceFactory;
@@ -16,6 +19,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class ManagerController implements Initializable{
@@ -23,9 +27,14 @@ public class ManagerController implements Initializable{
 	@FXML
 	private Button logoutButton;
 	
+	@FXML
+	private Pane menuPane;
+	
 	private UserService userService = ServiceFactory.getUserService();
 	
-	private RoomService roomService = ServiceFactory.getRoomService();
+	private EmployeeService employeeService = ServiceFactory.getEmployeeService();
+	
+	private ReportComposer reportComposer;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -33,7 +42,8 @@ public class ManagerController implements Initializable{
 	}
 	
 	private void configureManager() {
-		//To be written
+		reportComposer = ReportComposer.getInstance();
+		menuPane.toFront();
 	}
 	
 	@FXML
@@ -44,6 +54,12 @@ public class ManagerController implements Initializable{
 		stage.setScene(scene);
 		stage.show();
 		userService.logOut();
+	}
+	
+	@FXML
+	private void createReport(ActionEvent event) {
+		
+		//reportComposer.createOccupationReport(new Occupation(), additionalServices, breakfastRate);
 	}
 	
 }
