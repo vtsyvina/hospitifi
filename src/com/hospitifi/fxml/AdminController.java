@@ -12,6 +12,9 @@ import com.hospitifi.service.RoomService;
 import com.hospitifi.service.UserService;
 import com.hospitifi.util.ServiceFactory;
 
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -30,14 +33,18 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class AdminController implements Initializable{
 	
@@ -89,10 +96,52 @@ public class AdminController implements Initializable{
 	Button adminUserOkButton;
 	@FXML
 	Button adminUserCancelButton;
-
+	@FXML
+	TableView<Room> roomTable;
+	@FXML
+	TableColumn<Room, String> roomNumberCol;
+	@FXML
+	TableColumn<Room, Integer> roomFloorCol;
+	@FXML
+	TableColumn<Room, Integer> roomBedsCol;
+	@FXML
+	TableColumn<Room, BedType> roomBedTypeCol;
+	@FXML
+	TableColumn<Room, Boolean> roomSafeCol;
+	@FXML
+	TableColumn<Room, Boolean> roomBathCol;
+	@FXML
+	TableColumn<Room, Integer> roomRateCategoryCol;
+	@FXML
+	Button adminRoomOkButton;
+	@FXML
+	Button adminRoomCancelButton;
+	@FXML
+	ChoiceBox<Integer> bedsChoiceBox = new ChoiceBox<>();
+	@FXML
+	ChoiceBox<BedType> bedTypeChoiceBox = new ChoiceBox<>();
+	@FXML
+	TextField roomNumberTextField;
+	@FXML
+	TextField floorNumberTextField;
+	@FXML
+	TextField rateCategoryTextField;
+	@FXML
+	CheckBox safeCheckBox;
+	@FXML
+	CheckBox bathCheckBox;
+	@FXML
+	Label editingCreatingLabel;
+	@FXML
+	AnchorPane roomsBottomPane;
+	
 	private UserService userService = ServiceFactory.getUserService();
-
+	
+	private RoomService roomService = ServiceFactory.getRoomService();
+	
 	private ObservableList<User> userData;
+	
+	private ObservableList<Room> roomData;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -111,12 +160,16 @@ public class AdminController implements Initializable{
 		adminUsersRadioButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent ae) {
 				userPane.toFront();
+				hideRoomsBottomPane();
+				roomTable.getSelectionModel().clearSelection();
 			}
 		});
 		
 		adminRoomsRadioButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent ae) {
 				roomPane.toFront();
+				hideAdminNewEditUser();
+				userTable.getSelectionModel().clearSelection();
 			}
 		});
 		
@@ -148,8 +201,16 @@ public class AdminController implements Initializable{
 		roomFloorCol.setCellValueFactory(new PropertyValueFactory<>("floor"));
 		roomBedsCol.setCellValueFactory(new PropertyValueFactory<>("beds"));
 		roomBedTypeCol.setCellValueFactory(new PropertyValueFactory<>("bedType"));
-		roomSafeCol.setCellValueFactory(new PropertyValueFactory<>("safe"));
-		roomBathCol.setCellValueFactory(new PropertyValueFactory<>("bath"));
+//		roomSafeCol.setCellValueFactory(new PropertyValueFactory<>("safe"));
+//		roomBathCol.setCellValueFactory(new PropertyValueFactory<>("bath"));
+		
+		roomSafeCol.setCellValueFactory(c -> new SimpleBooleanProperty(c.getValue().hasSafe()));
+		roomSafeCol.setCellFactory(tc -> new CheckBoxTableCell<>());
+		
+		roomBathCol.setCellValueFactory(c -> new SimpleBooleanProperty(c.getValue().hasBath()));
+		roomBathCol.setCellFactory(tc -> new CheckBoxTableCell<>());
+		
+		
 		roomRateCategoryCol.setCellValueFactory(new PropertyValueFactory<>("rateCategory"));
 		
 		buildUserData();
@@ -160,7 +221,7 @@ public class AdminController implements Initializable{
 	private void buildUserData() {
 		userData = FXCollections.observableArrayList();
 		
-		userData.addAll(userService.getAll());         //build data into list from database
+		userData.addAll(userService.getAll());         //build data into list of Users, from database
 		
 		userTable.setItems(userData);               //use list in table
 	}
@@ -168,7 +229,7 @@ public class AdminController implements Initializable{
 	private void buildRoomData() {
 		roomData = FXCollections.observableArrayList();
 		
-		roomData.addAll(roomService.getAll());         //build data into list from database
+		roomData.addAll(roomService.getAll());         //build data into list of Rooms, from database
 		
 		roomTable.setItems(roomData);               //use list in table
 	}
@@ -178,13 +239,31 @@ public class AdminController implements Initializable{
 		adminUserOkButton.setVisible(false);
 		adminUserCancelButton.setVisible(false);
 	}
-
+	
+	@FXML
+	private void hideRoomsBottomPane(){
+		roomsBottomPane.setVisible(false);
+	}
+	
 	private void clearAdminUsersTextFields(){
 		loginAdminEdit.clear();
 		passwordAdminEdit.clear();
+		roleAdminEditChoiceBox.setValue(null);
 	}
-
+	
+	@FXML
+	private void clearBottomPane(){
+		roomNumberTextField.clear();
+		floorNumberTextField.clear();
+		rateCategoryTextField.clear();
+		bedsChoiceBox.setValue(null);
+		bedTypeChoiceBox.setValue(null);
+		bathCheckBox.setSelected(false);
+		safeCheckBox.setSelected(false);
+	}
+	
 	private void showUserDetails (User user){
+		
 		if (user != null) {
 			// Fill the labels with info from the user object.
 			adminDetailLogin.setText(":    " + user.getLogin());
@@ -193,14 +272,15 @@ public class AdminController implements Initializable{
 
 		} else {
 			// Person is null, remove all the text.
-			adminDetailLogin.setText(":    None currently selected");
-			adminDetailPassword.setText(":    None currently selected");
-			adminDetailRole.setText(":    None currently selected");
+			adminDetailLogin.setText("None currently selected");
+			adminDetailPassword.setText("None currently selected");
+			adminDetailRole.setText("None currently selected");
 		}
 	}
-
+	
 	@FXML
 	private void newUserClicked(ActionEvent event) {
+		
 		userTable.getSelectionModel().clearSelection();
 
 		clearAdminUsersTextFields();
@@ -209,10 +289,21 @@ public class AdminController implements Initializable{
 		adminUserOkButton.setVisible(true);
 		adminUserCancelButton.setVisible(true);
 	}
-
+	
+	@FXML
+	private void newRoomClicked(ActionEvent event) {
+		
+		editingCreatingLabel.setText("Create:");
+		roomTable.getSelectionModel().clearSelection();
+		clearBottomPane();
+		roomsBottomPane.setVisible(true);
+	}
+	
 	@FXML
 	private void deleteUserClicked(ActionEvent event) {
+		
 		int selectedIndex = userTable.getSelectionModel().getSelectedIndex();
+		
 		if (selectedIndex >= 0) {  //something is selected
 			
 			User user = userTable.getSelectionModel().getSelectedItem();
@@ -232,7 +323,6 @@ public class AdminController implements Initializable{
 			clearAdminUsersTextFields();
 			hideAdminNewEditUser();
 			Alert alert = new Alert(AlertType.WARNING);
-			alert.setGraphic(null);
 			alert.initOwner(adminDetailLogin.getScene().getWindow());
 			alert.setTitle("Delete - No Selection");
 			alert.setHeaderText("No User Selected");
@@ -240,9 +330,42 @@ public class AdminController implements Initializable{
 			alert.showAndWait();
 		}
 	}
-
+	
+	@FXML
+	private void deleteRoomClicked(ActionEvent event) {
+		
+		int selectedIndex = roomTable.getSelectionModel().getSelectedIndex();
+		
+		if (selectedIndex >= 0) {  //something is selected
+			
+			Room room = roomTable.getSelectionModel().getSelectedItem();
+			
+			roomService.delete(room.getId());
+			
+			buildRoomData();
+			roomTable.getSelectionModel().clearSelection();
+			
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Room deletion");
+			alert.setHeaderText("Room was successfully removed.");
+			alert.setContentText("Removed room: \n" + room);
+			alert.showAndWait();
+			
+		} else {  // nothing selected
+			clearBottomPane();
+			hideRoomsBottomPane();
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.initOwner(adminDetailLogin.getScene().getWindow());
+			alert.setTitle("Delete - No Selection");
+			alert.setHeaderText("No Room Selected");
+			alert.setContentText("Please select a room in the table to delete.");
+			alert.showAndWait();
+		}
+	}
+	
 	@FXML
 	private void editUserClicked(ActionEvent event) {
+		
 		int selectedIndex = userTable.getSelectionModel().getSelectedIndex();
 		if (selectedIndex >= 0) {  //something is selected
 
@@ -265,23 +388,57 @@ public class AdminController implements Initializable{
 			alert.showAndWait();
 		}
 	}
+	
+	@FXML
+	private void editRoomClicked(ActionEvent event) {
+		
+		int selectedIndex = roomTable.getSelectionModel().getSelectedIndex();
+		if (selectedIndex >= 0) {  //something is selected
+			
+			editingCreatingLabel.setText("Edit");
+			
+			roomNumberTextField.setText(roomTable.getSelectionModel().getSelectedItem().getNumber());
+			floorNumberTextField.setText(String.valueOf(roomTable.getSelectionModel().getSelectedItem().getFloor()));
+			bedsChoiceBox.setValue(roomTable.getSelectionModel().getSelectedItem().getBeds());
+			bedTypeChoiceBox.setValue(roomTable.getSelectionModel().getSelectedItem().getBedType());
+			rateCategoryTextField.setText(String.valueOf(roomTable.getSelectionModel().getSelectedItem().getRateCategory()));
+			
+			roomsBottomPane.setVisible(true);
 
+		} else {  // nothing selected
+			clearBottomPane();
+			hideRoomsBottomPane();
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.initOwner(adminDetailLogin.getScene().getWindow());
+			alert.setTitle("Edit - No Selection");
+			alert.setHeaderText("No Room Selected");
+			alert.setContentText("Please select a room in the table to edit.");
+			alert.showAndWait();
+		}
+	}
+	
 	@FXML
 	private void adminUserCancelButtonPressed(ActionEvent event) {
 		clearAdminUsersTextFields();
 		hideAdminNewEditUser();
 	}
-
+	
+	@FXML
+	private void roomCancelPressed(ActionEvent event) {
+		clearBottomPane();
+		hideRoomsBottomPane();
+	}
+	
 	@FXML
 	private void adminNewEditUserOkButtonPressed(ActionEvent event) {
-		
+
 		int index = userTable.getSelectionModel().getSelectedIndex();
-		
-		if (index < 0 ) {        //no cell selected, which means "New" is pressed
-			
+
+		if (index < 0 ) {        //no cell selected, which means "New" was pressed
+
 			String log = loginAdminEdit.getText();
 			String pass = passwordAdminEdit.getText();
-			
+
 			if (log == null || pass == null || roleAdminEditChoiceBox.getValue() == null || log.equals("") || pass.equals("")) {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.initOwner(adminDetailLogin.getScene().getWindow());
@@ -293,7 +450,7 @@ public class AdminController implements Initializable{
 			}
 			for (User user : userData) {
 				if(user.getLogin().equals(loginAdminEdit.getText())) {
-					
+
 					Alert alert = new Alert(AlertType.ERROR);
 					alert.initOwner(adminDetailLogin.getScene().getWindow());
 					alert.setTitle("Error");
@@ -304,33 +461,34 @@ public class AdminController implements Initializable{
 				}
 			}
 			
+			//this point is reached if there are no errors
 			User user = new User(1234, loginAdminEdit.getText(), passwordAdminEdit.getText(), 
 					null, roleAdminEditChoiceBox.getSelectionModel().getSelectedItem());
-			
+
 			userService.save(user);
-			
+
 			buildUserData();
-			
+
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle(null);
 			alert.setHeaderText("User was successfully added");
 			alert.setContentText("Added user: \n" + userData.get(userData.size() - 1));
 			alert.showAndWait();
-			
+
 			userTable.getSelectionModel().clearSelection();
-			
+
 			adminNewEditUserGridPane.setVisible(false);
 			adminUserOkButton.setVisible(false);
 			adminUserCancelButton.setVisible(false);
 		}
-		
+
 		else {//"Edit" button was pressed
-			
+
 			String log = loginAdminEdit.getText();
 			String pass = passwordAdminEdit.getText();
-			
+
 			if (log == null || pass == null || roleAdminEditChoiceBox.getValue() == null || log.equals("") || pass.equals("")) {
-				
+
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.initOwner(adminDetailLogin.getScene().getWindow());
 				alert.setTitle("Error");
@@ -339,13 +497,13 @@ public class AdminController implements Initializable{
 				alert.showAndWait();
 				return;
 			}
-			
+
 			long currentId = userTable.getSelectionModel().getSelectedItem().getId();
 			User user = new User(currentId, loginAdminEdit.getText(), passwordAdminEdit.getText(), 
 					null, roleAdminEditChoiceBox.getSelectionModel().getSelectedItem());
-			
+
 			userService.update(user);
-			
+
 			buildUserData();
 
 			Alert alert = new Alert(AlertType.INFORMATION);
@@ -356,6 +514,136 @@ public class AdminController implements Initializable{
 		}
 	}
 	
+	
+	@FXML
+	private void roomOkPressed(ActionEvent event) {
+
+		int index = roomTable.getSelectionModel().getSelectedIndex();
+
+		if (index < 0 ) {        //no cell selected, which means "New" was pressed
+
+			String number = roomNumberTextField.getText();
+			String floor = floorNumberTextField.getText(); //(Integer)
+			BedType bedType = bedTypeChoiceBox.getValue();
+			String rateCategory = rateCategoryTextField.getText(); //(Integer)
+			boolean safe = safeCheckBox.isSelected();
+			boolean bath = bathCheckBox.isSelected();
+			
+	        //nothing should be null or empty string
+			if (number == null || number.equals("") || floor == null || floor.equals("") || bedsChoiceBox.getValue() == null 
+					|| bedType == (null) || rateCategory == null || rateCategory.equals("")) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.initOwner(adminDetailLogin.getScene().getWindow());
+				alert.setTitle("Error: null");
+				alert.setHeaderText(null);
+				alert.setContentText("Could not create because one or more entries are blank.");
+				alert.showAndWait();
+				return;
+			}
+
+			//room number should be unique
+			for (Room room : roomData) {
+				if (room.getNumber().equals(number)) {
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.initOwner(adminDetailLogin.getScene().getWindow());
+					alert.setTitle("Error: unique requirement");
+					alert.setHeaderText("Could not create because this room number already exists.");
+					alert.setContentText("Room Number must be unique.");
+					alert.showAndWait();
+					return;
+				}
+			}
+			
+			//only integer numbers allowed for room, floor, and rate category
+			if (!number.matches("[0-9]+") || !floor.matches("[0-9]+") || !rateCategory.matches("[0-9]+")) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.initOwner(adminDetailLogin.getScene().getWindow());
+				alert.setTitle("Error: invalid input(s)");
+				alert.setHeaderText(null);
+				StringBuilder message = new StringBuilder();
+				if (!number.matches("[0-9]+")) { 
+					message.append("Room Number must be an integer.\n");
+				}
+				if (!floor.matches("[0-9]+")) {
+					message.append("Floor Number must be an integer.\n");
+				}
+				if (!rateCategory.matches("[0-9]+")) {
+					message.append("Rate Category must be an integer.\n");
+				}
+				alert.setContentText(message.toString().trim());
+				alert.showAndWait();
+				return;
+			}
+			
+			//this point is reached if there are no errors
+
+			Room room = new Room();
+			room.setNumber(number);
+			room.setFloor(Integer.parseInt(floor));
+			room.setBeds(bedsChoiceBox.getValue().intValue());
+			room.setBedType(bedType);
+			room.setSafe(safe);
+			room.setBath(bath);
+			room.setRateCategory(Integer.parseInt(rateCategory));
+			
+			roomService.save(room);
+			
+			buildRoomData();
+			
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle(null);
+			alert.setHeaderText("Room was successfully added");
+			alert.setContentText("Added room: \n" + roomData.get(roomData.size() - 1));
+			alert.showAndWait();
+			
+			roomTable.getSelectionModel().clearSelection();
+			
+		}
+
+		else {//"Edit" button was pressed
+
+			String number = roomNumberTextField.getText();
+			String floor = floorNumberTextField.getText(); //(Integer)
+			BedType bedType = bedTypeChoiceBox.getValue();
+			String rateCategory = rateCategoryTextField.getText(); //(Integer)
+			boolean safe = safeCheckBox.isSelected();
+			boolean bath = bathCheckBox.isSelected();
+			
+			if (number == null || number.equals("") || floor == null || bedsChoiceBox.getValue() == null 
+					|| bedType == (null) || rateCategory == null ) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.initOwner(adminDetailLogin.getScene().getWindow());
+				alert.setTitle("Error");
+				alert.setHeaderText(null);
+				alert.setContentText("Could not edit the room because one or more entries are blank.");
+				alert.showAndWait();
+				return;
+			}
+
+			long currentId = roomTable.getSelectionModel().getSelectedItem().getId();
+			
+			Room room = new Room();
+			room.setId(currentId);
+			room.setNumber(number);
+			room.setFloor(Integer.parseInt(floor));
+			room.setBeds(bedsChoiceBox.getValue().intValue());
+			room.setBedType(bedType);
+			room.setSafe(safe);
+			room.setBath(bath);
+			room.setRateCategory(Integer.parseInt(rateCategory));
+			
+			roomService.update(room);
+			
+			buildRoomData();
+			
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Room update");
+			alert.setHeaderText("Room was successfully edited");
+			alert.setContentText("Edited room: \n" + room);
+			alert.showAndWait();
+		}
+	}
+
 	@FXML
 	private void handleLogoutButton(ActionEvent event) throws IOException{
 		Stage stage = (Stage) logoutButton.getScene().getWindow();  
@@ -366,87 +654,6 @@ public class AdminController implements Initializable{
 		userService.logOut();
 	}
 	
-	@FXML
-	TableView<Room> roomTable;
-	@FXML
-	TableColumn<Room, String> roomNumberCol;
-	@FXML
-	TableColumn<Room, Integer> roomFloorCol;
-	@FXML
-	TableColumn<Room, Integer> roomBedsCol;
-	@FXML
-	TableColumn<Room, BedType> roomBedTypeCol;
-	@FXML
-	TableColumn<Room, String> roomSafeCol;
-	@FXML
-	TableColumn<Room, String> roomBathCol;
-	@FXML
-	TableColumn<Room, Integer> roomRateCategoryCol;
-	@FXML
-	Button adminRoomOkButton;
-	@FXML
-	Button adminRoomCancelButton;
-	@FXML
-	ChoiceBox<Integer> bedsChoiceBox = new ChoiceBox<>();
-	@FXML
-	ChoiceBox<BedType> bedTypeChoiceBox = new ChoiceBox<>();
-	@FXML
-	TextField roomNumberTextField;
-	@FXML
-	TextField floorNumberTextField;
-	@FXML
-	TextField rateCategoryTextField;
-	@FXML
-	CheckBox safeCheckBox;
-	@FXML
-	CheckBox bathCheckBox;
-	@FXML
-	Label editingCreatingLabel;
-	@FXML
-	AnchorPane roomsBottomPane;
-	
-	private RoomService roomService = ServiceFactory.getRoomService();
 
-	private ObservableList<Room> roomData;
-	
-	
-	
-	@FXML
-	private void roomOkPressed(ActionEvent event) {
-		
-	}
-	
-	@FXML
-	private void roomCancelPressed(ActionEvent event) {
-		
-	}
-	
-	@FXML
-	private void newRoomClicked(ActionEvent event) {
-		
-	}
-	
-	@FXML
-	private void editRoomClicked(ActionEvent event) {
-		
-	}
-	
-	@FXML
-	private void deleteRoomClicked(ActionEvent event) {
-		
-	}
-	
-	@FXML
-	private void hideRoomsBottomPane(){
-		roomsBottomPane.setVisible(false);
-	}
-	
-	@FXML
-	private void clearBottomPane(){
-		roomNumberTextField.clear();
-		floorNumberTextField.clear();
-		rateCategoryTextField.clear();
-		bedsChoiceBox.setValue(null);
-		bedTypeChoiceBox.setValue(null);
-	}
+
 }
