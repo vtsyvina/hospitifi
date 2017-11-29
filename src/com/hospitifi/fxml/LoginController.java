@@ -128,13 +128,13 @@ public class LoginController implements Initializable {
 			String role = userService.getCurrentUserRole();
 			Parent root; 
 			if (role.equalsIgnoreCase("admin")) {
-				root = FXMLLoader.load(new File("src/com/hospitifi/fxml/AdminMenu.fxml").toURI().toURL());
+				root = FXMLLoader.load(getClass().getResource("AdminMenu.fxml"));
 			}
 			else if (role.equalsIgnoreCase("manager")) {
-				root = FXMLLoader.load(new File("src/com/hospitifi/fxml/ManagerMenu.fxml").toURI().toURL());
+				root = FXMLLoader.load(getClass().getResource("ManagerMenu.fxml"));
 			}
-			else {  
-				root = FXMLLoader.load(new File("src/com/hospitifi/fxml/ReceptionistMenu.fxml").toURI().toURL());
+			else {
+				root = FXMLLoader.load(getClass().getResource("ReceptionistMenu.fxml"));
 			}
 			Scene scene = new Scene(root);
 			stage.setScene(scene);
@@ -148,7 +148,7 @@ public class LoginController implements Initializable {
 	@FXML
 	private void handleLogoutButton(ActionEvent event) throws IOException{
 		Stage stage = (Stage) logoutButton.getScene().getWindow();  
-		Parent root = FXMLLoader.load(new File("src/com/hospitifi/fxml/Login.fxml").toURI().toURL());
+		Parent root = FXMLLoader.load(getClass().getResource("Login.fxml"));
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		stage.show();

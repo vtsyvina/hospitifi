@@ -212,7 +212,7 @@ public class RoomRepositoryImpl implements RoomRepository {
 
     private String getBedType(ResultSet resultSet) throws SQLException {
         String bedsType = resultSet.getString("BEDS_TYPE");
-        if (bedsType == null) {
+        if (bedsType == null || bedsType.length() == 0) {
             bedsType = "QUEEN";
         } else {
             bedsType = bedsType.toUpperCase();
