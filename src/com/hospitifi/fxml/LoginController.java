@@ -18,7 +18,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
@@ -90,8 +89,7 @@ public class LoginController implements Initializable {
 		});
 	}
 
-	/*This static load method was necessary when using one controller for 
-	 * multiple scenes - not being used now that controllers have been separated*/
+	//This static load method is necessary when using one controller for multiple scenes.
 	public static Parent load(final URL url, final ResourceBundle resBundle, final Object controller)
 			throws IOException {
 		Objects.requireNonNull(url);
@@ -143,16 +141,6 @@ public class LoginController implements Initializable {
 		else {
 			invalidCombination.setVisible(true);
 		}
-	}
-
-	@FXML
-	private void handleLogoutButton(ActionEvent event) throws IOException{
-		Stage stage = (Stage) logoutButton.getScene().getWindow();  
-		Parent root = FXMLLoader.load(getClass().getResource("Login.fxml"));
-		Scene scene = new Scene(root);
-		stage.setScene(scene);
-		stage.show();
-		userService.logOut();
 	}
 
 }

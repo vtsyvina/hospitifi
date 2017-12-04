@@ -16,6 +16,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -27,6 +28,9 @@ public class ReceptionistController implements Initializable{
 	@FXML
 	private Pane menuPane;
 	
+	@FXML
+	private Label welcomeMessage;
+	
 	private UserService userService = ServiceFactory.getUserService();
 	
 	private RoomService roomService = ServiceFactory.getRoomService();
@@ -37,6 +41,7 @@ public class ReceptionistController implements Initializable{
 	}
 	
 	private void configureReceptionist() {
+		welcomeMessage.setText("Welcome, " + userService.getCurrentUser().getLogin() + ".");
 		menuPane.toFront();
 	}
 	

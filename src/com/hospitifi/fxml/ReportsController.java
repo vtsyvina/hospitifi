@@ -36,7 +36,7 @@ public class ReportsController implements Initializable{
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		createReport();
+		loadReports();
 	}
 	
 	
@@ -66,7 +66,7 @@ public class ReportsController implements Initializable{
 	    stage.close();
 	}
 	
-	private void createReport() { //LOAD reports
+	private void loadReports() { //LOAD reports
 		list = FXCollections.observableArrayList();
 		list.addAll(docxFiles("reports/occupation"));
 		listView.setItems(list);

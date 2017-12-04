@@ -38,7 +38,7 @@
                         </Button>
                      </children>
                   </VBox>
-                  <Label layoutX="532.0" layoutY="33.0" prefHeight="49.0" prefWidth="133.0" text="Welcome.">
+                  <Label fx:id="welcomeMessage" layoutX="466.0" layoutY="33.0" prefHeight="49.0" prefWidth="375.0" text="Welcome, username.">
                      <font>
                         <Font size="30.0" />
                      </font>
