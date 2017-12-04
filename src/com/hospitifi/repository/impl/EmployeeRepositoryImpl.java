@@ -26,7 +26,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     private static final String GET_ALL_EMPLOYEES = "SELECT ID, NAME, POSITION FROM EMPLOYEES";
     private static final String GET_WORKING_HOURS = "SELECT EMPLOYEE_ID, DAY, START_TIME, END_TIME FROM EMPLOYEES_WORK_HOURS WHERE EMPLOYEE_ID = ?";
     private static final String UPDATE_EMPLOYEE = "UPDATE EMPLOYEES SET NAME = ?, POSITION = ? WHERE ID = ?";
-    private static final String DELETE_EMPLOYEE = "DELETE FROM EMPLOYEES_WORK_HOURS WHERE EMPLOYEE_ID = :id; DELETE FROM EMPLOYEE WHERE ID = :id";
+    private static final String DELETE_EMPLOYEE = "DELETE FROM EMPLOYEES WHERE ID = ?";
     private static final String INSERT_EMPLOYEE = "INSERT INTO EMPLOYEES (NAME, POSITION) VALUES (?,?)";
     private static final String INSERT_WORKING_HOURS = "INSERT INTO EMPLOYEES_WORK_HOURS (EMPLOYEE_ID, DAY, START_TIME, END_TIME) VALUES (?,?,?,?)";
     private static final String DELETE_WORKING_HOURS = "DELETE FROM EMPLOYEES_WORK_HOURS WHERE EMPLOYEE_ID = ?";
@@ -147,8 +147,11 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
             return false;
         }
         try {
-            NamedParameterStatement statement = new NamedParameterStatement(connection, DELETE_EMPLOYEE);
-            statement.setLong("id", id);
+            PreparedStatement statement = connection.prepareStatement(DELETE_WORKING_HOURS);
+            statement.setLong(1, id);
+            statement.execute();
+            statement = connection.prepareStatement(DELETE_EMPLOYEE);
+            statement.setLong(1, id);
             return statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
